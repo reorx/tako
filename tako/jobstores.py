@@ -207,6 +207,17 @@ class DjangoJobStore(DjangoResultStoreMixin, BaseJobStore):
         except DjangoJob.DoesNotExist:
             return None
 
+    @util.retry_on_db_operational_error
+    def lookup_job_v2(self, job_id: str) -> tuple[DjangoJob|None, AppSchedulerJob|None]:
+        try:
+            django_job = DjangoJob.objects.get(id=job_id)
+            job = None
+            if django_job.job_state:
+                job = self._reconstitute_job(django_job.job_state)
+            return django_job, job
+        except DjangoJob.DoesNotExist:
+            return None, None
+
     def get_due_jobs(self, now) -> List[AppSchedulerJob]:
         dt = get_django_internal_datetime(now)
         return self._get_jobs(next_run_time__lte=dt)

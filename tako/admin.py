@@ -1,8 +1,6 @@
-import time
-from datetime import timedelta
 
-from apscheduler import events
-from apscheduler.schedulers.background import BackgroundScheduler
+
+from apscheduler.util import normalize
 from django.conf import settings
 from django.contrib import admin, messages
 from django.db.models import Avg
@@ -27,8 +25,6 @@ class DjangoJobAdmin(admin.ModelAdmin):
         self._django_jobstore = DjangoJobStore()
         self._memory_jobstore = DjangoMemoryJobStore()
 
-        self._jobs_scheduled = None
-        self._jobs_executed = None
         self._job_execution_timeout = getattr(
             settings, "APSCHEDULER_RUN_NOW_TIMEOUT", 15
         )
@@ -64,70 +60,26 @@ class DjangoJobAdmin(admin.ModelAdmin):
     actions = ["run_selected_jobs"]
 
     def run_selected_jobs(self, request, queryset):
-        scheduler = BackgroundScheduler()
-        scheduler.add_jobstore(self._memory_jobstore)
-        scheduler.add_listener(self._handle_execution_event, events.EVENT_JOB_EXECUTED)
-
-        scheduler.start()
-
-        self._jobs_scheduled = set()
-        self._jobs_executed = set()
-        start_time = timezone.now()
+        from .scheduler import background_scheduler as scheduler
 
         for item in queryset:
-            django_job = self._django_jobstore.lookup_job(item.id)
+            django_job, job = self._django_jobstore.lookup_job_v2(item.id)
+            # print('run job', job)
 
             if not django_job:
                 msg = _("Could not find job {} in the database! Skipping execution...")
                 self.message_user(request, format_html(msg, item.id), messages.WARNING)
                 continue
 
-            scheduler.add_job(
-                django_job.func_ref,
-                trigger=None,  # Run immediately
-                args=django_job.args,
-                kwargs=django_job.kwargs,
-                id=django_job.id,
-                name=django_job.name,
-                misfire_grace_time=django_job.misfire_grace_time,
-                coalesce=django_job.coalesce,
-                max_instances=django_job.max_instances,
-            )
+            job.next_run_time = normalize(timezone.now())
 
-            self._jobs_scheduled.add(django_job.id)
+            self._django_jobstore.update_job(job)
 
-        while self._jobs_scheduled != self._jobs_executed:
-            # Wait for selected jobs to be executed.
-            if timezone.now() > start_time + timedelta(
-                seconds=self._job_execution_timeout
-            ):
-                msg = _(
-                    "Maximum runtime of {} seconds exceeded! Not all jobs could be completed successfully. "
-                    "Pending jobs: {}"
-                )
-                self.message_user(
-                    request,
-                    format_html(
-                        msg,
-                        self._job_execution_timeout,
-                        ",".join(self._jobs_scheduled - self._jobs_executed),
-                    ),
-                    messages.ERROR,
-                )
+            scheduler.wakeup()
 
-                scheduler.shutdown(wait=False)
-                return None
+            self.message_user(request, format_html(_("Executed job '{}'!"), django_job.id))
 
-            time.sleep(0.1)
-
-        for job_id in self._jobs_executed:
-            self.message_user(request, format_html(_("Executed job '{}'!"), job_id))
-
-        scheduler.shutdown()
         return None
-
-    def _handle_execution_event(self, event: events.JobExecutionEvent):
-        self._jobs_executed.add(event.job_id)
 
     run_selected_jobs.short_description = _("Run the selected django jobs")
 
