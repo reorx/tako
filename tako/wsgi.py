@@ -15,8 +15,10 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tako.settings')
 
 application = get_wsgi_application()
+print('wsgi application')
 
-# from tako.start import start_tasks_scheduler
+
+from .scheduler import init_scheduler, start_scheduler
 
 
-# start_tasks_scheduler()
+start_scheduler(init_scheduler())

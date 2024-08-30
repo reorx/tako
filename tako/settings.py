@@ -22,6 +22,7 @@ class Env(EnvBase):
     DEBUG = (bool, True)
     APP_ENV = (str, 'local')
     SCRIPTS_DIR = (str, 'local_scripts')
+    WORKERS_NUM = (int, 2)
 
     # Connections
     ## Database
@@ -134,6 +135,73 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+## Logging ##
+
+# LOG_FORMAT = '[%(name)s] %(levelname)s %(message)s t=%(asctime)s p=%(pathname)s:%(lineno)d'
+LOG_FORMAT = '%(asctime)s  %(levelname)s  %(name)-10s  %(message)s'
+
+# LOG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
+LOG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+
+LOG_LEVEL_APP = Env.LOG_LEVEL_APP
+LOG_LEVEL_DB = Env.LOG_LEVEL_DB
+log_formatter = 'common'
+if Env.LOG_FORMATTER_JSON or not DEBUG:
+    log_formatter = 'json'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'loggers': {
+        'app': {
+            'handlers': ['stream'],
+            'level': LOG_LEVEL_APP,
+        },
+
+        # Disable unnecessary 4xx log
+        'django.request': {
+            'level': 'ERROR',
+            'handlers': ['stream'],
+            'propagate': 0,
+        },
+
+        'django.db.backends': {
+            'level': LOG_LEVEL_DB,
+            'handlers': ['stream'],
+            'propagate': 0,
+        },
+        # change level here if we want to see schema SQL like CREATE TABLE, ALTER TABLE, etc.
+        'django.db.backends.schema': {
+            'level': 'INFO',
+            'handlers': ['stream'],
+            'propagate': 0,
+        },
+    },
+    'handlers': {
+        'stream': {
+            'class': 'logging.StreamHandler',
+            'formatter': log_formatter,
+        },
+        'sql': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'common',
+            'level': 'DEBUG',
+        },
+    },
+    'formatters': {
+        'common': {
+            'format': LOG_FORMAT,
+            'datefmt': LOG_DATE_FORMAT,
+        },
+        # 'json': {
+        #     '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+        #     'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
+        #     'datefmt': LOG_DATE_FORMAT,
+        #     'json_ensure_ascii': False,
+        # },
+    },
+}
 
 
 # Internationalization

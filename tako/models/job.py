@@ -6,8 +6,8 @@ from django.db.models import UniqueConstraint
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .utils import util
-from .utils.util import get_django_internal_datetime
+from ..utils import util
+from ..utils.util import get_django_internal_datetime
 
 
 logger = logging.getLogger(__name__)
