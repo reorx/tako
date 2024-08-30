@@ -125,6 +125,11 @@ class DjangoJobExecution(models.Model):
         ),
     )
 
+    # for jobs that are run as scripts
+    stdout = models.TextField(null=True, blank=True)
+    stderr = models.TextField(null=True, blank=True)
+    returncode = models.IntegerField(null=True)
+
     objects = DjangoJobExecutionManager()
 
     @classmethod
@@ -137,6 +142,9 @@ class DjangoJobExecution(models.Model):
         status: str,
         exception: str = None,
         traceback: str = None,
+        stdout: str = None,
+        stderr: str = None,
+        returncode: int = None,
     ) -> "DjangoJobExecution":
         """
         Uses an APScheduler lock to ensure that only one database entry can be created / updated at a time.
@@ -189,6 +197,11 @@ class DjangoJobExecution(models.Model):
                     if traceback:
                         job_execution.traceback = traceback
 
+                    if returncode is not None:
+                        job_execution.returncode = returncode
+                        job_execution.stdout = stdout
+                        job_execution.stderr = stderr
+
                     job_execution.save()
 
             except DjangoJobExecution.DoesNotExist:
@@ -206,6 +219,9 @@ class DjangoJobExecution(models.Model):
                     finished=finished,
                     exception=exception,
                     traceback=traceback,
+                    returncode=returncode,
+                    stdout=stdout,
+                    stderr=stderr,
                 )
 
         return job_execution
