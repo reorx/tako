@@ -122,8 +122,8 @@ def get_task_form_help_texts():
     from apscheduler.triggers.interval import IntervalTrigger
 
     examples = {
-        'cron': ('run every 5 minutes', {
-            'minute': '*/5',
+        'cron': ('run every 30 seconds', {
+            'second': '*/30',
         }),
         'interval': ('run every 1 hour', {
             'hours': 1,
@@ -170,6 +170,16 @@ class TaskForm(forms.ModelForm):
         # model = Task
         help_texts = get_task_form_help_texts()
 
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        if not name:
+            script = self.cleaned_data['script']
+            name = script.filename
+            if Task.objects.filter(name=name).exists():
+                raise forms.ValidationError('Task with the same name (script filename) already exists')
+        self.cleaned_data['name'] = name
+        return self.cleaned_data
+
     def clean_trigger_value(self):
         trigger_type = self.cleaned_data['trigger_type']
         trigger_value = self.cleaned_data['trigger_value']
@@ -198,14 +208,11 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ["name", "job", "script", "trigger_type", "created_at", "updated_at"]
 
     def save_model(self, request, obj, form, change):
-        data = form.cleaned_data
+        # data = form.cleaned_data
         # data: {'name': '', 'script': <ScriptVersion: script_1.py - v0>, 'script_args': '', 'trigger_type': 'cron', 'trigger_value': {'minute': '*/5'}}
         # obj: Task<{'id': None, 'name': None, 'job': None, 'script': 1, 'script_args': '', 'trigger_type': 'cron', 'trigger_value': {'minute': '*/5'}}>
-        if not obj.name:
-            obj.name = obj.script.filename
 
         create_or_update_task_from_obj(obj)
-        # super().save_model(request, obj, form, change)
 
     def delete_model(self, request, obj):
         # print('delete_model', obj)

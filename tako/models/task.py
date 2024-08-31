@@ -6,9 +6,9 @@ from .job import DjangoJob
 
 
 class TriggerType(SimpleEnum):
-    date = KV
-    interval = KV
     cron = KV
+    interval = KV
+    date = KV
 
 
 class Task(models.Model):

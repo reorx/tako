@@ -15,7 +15,13 @@ from .scheduler import get_scheduler
 default_trigger = DateTrigger(run_date='9999-01-01')
 
 
-def create_task_job(task_name, script: ScriptVersion, script_args: str|None, trigger_type, trigger_value) -> Job:
+def create_task_job(task: Task) -> Job:
+    task_name = task.name
+    script: ScriptVersion = task.script
+    script_args = task.script_args
+    trigger_type = task.trigger_type
+    trigger_value = task.trigger_value
+
     job_id = f'task:{task_name}'
 
     trigger = None
@@ -38,6 +44,7 @@ def create_task_job(task_name, script: ScriptVersion, script_args: str|None, tri
         script_runner,
         args=[script.filename, script_args],
         id=job_id,
+        name=job_id,
         trigger=trigger,
         max_instances=1,
         replace_existing=True,
@@ -56,8 +63,14 @@ def delete_task(obj: Task):
 
 def create_or_update_task_from_obj(obj: Task):
     with atomic():
-        job_id = create_task_job(obj.name, obj.script, obj.script_args, obj.trigger_type, obj.trigger_value)
+        job_id = create_task_job(obj)
 
         obj.job_id = job_id
 
         obj.save()
+
+
+# NOTE no need to load task jobs to scheduler as jobstores has handled it automatically
+# def load_task_jobs_to_scheduler():
+#     for task in Task.objects.all():
+#         create_task_job(task)
