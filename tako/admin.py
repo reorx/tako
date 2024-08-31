@@ -4,7 +4,7 @@ from apscheduler.util import normalize
 from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
-from django.db.models import Avg, Max
+from django.db.models import Avg
 from django.db.transaction import atomic
 from django.utils import timezone
 from django.utils.html import format_html
@@ -13,7 +13,10 @@ from django.utils.translation import gettext_lazy as _
 from easy_select2 import Select2
 
 from .api.scheduler import get_scheduler
-from .api.task import create_or_update_task_from_obj, delete_task
+from .api.task import (
+    create_or_update_script_from_obj, create_or_update_task_from_obj, delete_task,
+    get_latest_scripts
+)
 from .api.types import CronTriggerDT, DateTriggerDT, IntervalTriggerDT
 from .lib.jobstores import DjangoJobStore, DjangoMemoryJobStore
 from .models import DjangoJob, DjangoJobExecution, ScriptVersion, Task
@@ -239,10 +242,11 @@ class ScriptForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # NOTE use .values / .values_list at first to group by the field
-        # NOTE order_by cannot be used here, as it will mess up the group by
-        qs = ScriptVersion.objects.values_list('filename').annotate(version=Max('version'), updated_at=Max('updated_at'))
-        self.fields['filename'].widget.choices = [('', '')] + [(filename, f'{filename} ({version})') for filename, version, _ in sorted(qs, key=lambda x: x[2], reverse=True)]
+        scripts = get_latest_scripts()
+        self.fields['filename'].widget.choices = [('', '')] + [
+            (i['filename'], f"{i['filename']} ({i['version']})")
+            for i in scripts
+        ]
 
 
 @admin.register(ScriptVersion)
@@ -253,10 +257,4 @@ class ScriptVersionAdmin(admin.ModelAdmin):
     readonly_fields = ['version']
 
     def save_model(self, request, obj, form, change):
-        if obj.version is None:
-            qs = ScriptVersion.objects.filter(filename=obj.filename).order_by('-version')
-            if qs.exists():
-                obj.version = qs[0].version + 1
-            else:
-                obj.version = 0
-        super().save_model(request, obj, form, change)
+        create_or_update_script_from_obj(obj)
