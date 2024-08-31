@@ -29,6 +29,10 @@ def delete_old_job_executions(max_age=604_800):
 background_scheduler = None
 
 
+def get_scheduler():
+    return background_scheduler
+
+
 def init_scheduler():
     global background_scheduler
     if not background_scheduler:

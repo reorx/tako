@@ -154,7 +154,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'loggers': {
-        'app': {
+        'tako': {
             'handlers': ['stream'],
             'level': LOG_LEVEL_APP,
         },
