@@ -4,12 +4,13 @@ from apscheduler.util import normalize
 from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
-from django.db.models import Avg
+from django.db.models import Avg, Max
 from django.db.transaction import atomic
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from easy_select2 import Select2
 
 from .api.scheduler import get_scheduler
 from .api.task import create_or_update_task_from_obj, delete_task
@@ -225,6 +226,37 @@ class TaskAdmin(admin.ModelAdmin):
                 delete_task(obj)
 
 
+class ScriptForm(forms.ModelForm):
+    filename = forms.CharField(widget=Select2(select2attrs={
+        'placeholder': 'Select a script or create a new one',
+        'tags': True,
+    }))
+
+    class Meta:
+        help_texts = {
+            'version': 'Version will be auto-incremented when a script with the same filename is created',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # NOTE use .values / .values_list at first to group by the field
+        # NOTE order_by cannot be used here, as it will mess up the group by
+        qs = ScriptVersion.objects.values_list('filename').annotate(version=Max('version'), updated_at=Max('updated_at'))
+        self.fields['filename'].widget.choices = [('', '')] + [(filename, f'{filename} ({version})') for filename, version, _ in sorted(qs, key=lambda x: x[2], reverse=True)]
+
+
 @admin.register(ScriptVersion)
 class ScriptVersionAdmin(admin.ModelAdmin):
+    form = ScriptForm
+
     list_display = ["filename", "version", "created_at", "updated_at"]
+    readonly_fields = ['version']
+
+    def save_model(self, request, obj, form, change):
+        if obj.version is None:
+            qs = ScriptVersion.objects.filter(filename=obj.filename).order_by('-version')
+            if qs.exists():
+                obj.version = qs[0].version + 1
+            else:
+                obj.version = 0
+        super().save_model(request, obj, form, change)

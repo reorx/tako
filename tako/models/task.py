@@ -24,7 +24,7 @@ class Task(models.Model):
     script_args = models.TextField(null=True, blank=True)
 
     # trigger
-    trigger_type = models.CharField(max_length=16, null=True, blank=True, choices=list(TriggerType.items()))
+    trigger_type = models.CharField(max_length=16, null=True, blank=True, choices=list(TriggerType.items()), db_index=True)
     trigger_value = models.JSONField(null=True, blank=True)
 
     # time
@@ -39,7 +39,7 @@ class Task(models.Model):
 
 
 class ScriptVersion(models.Model):
-    filename = models.CharField(max_length=64)
+    filename = models.CharField(max_length=64, db_index=True)
     version = models.IntegerField()
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -50,3 +50,4 @@ class ScriptVersion(models.Model):
 
     class Meta:
         db_table = 'tako_script_version'
+        unique_together = ['filename', 'version']
