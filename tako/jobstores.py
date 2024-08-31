@@ -12,7 +12,6 @@ from apscheduler.schedulers.base import BaseScheduler
 from django import db
 from django.db import IntegrityError, transaction
 
-from .api.task import ScriptRunResult
 from .models import DjangoJob, DjangoJobExecution
 from .utils import util
 from .utils.util import get_apscheduler_datetime, get_django_internal_datetime
@@ -119,34 +118,22 @@ class DjangoResultStoreMixin:
         """
         try:
             if event.code == events.EVENT_JOB_ERROR:
-                if isinstance(event.exception, ScriptRunResult):
-                    # this is the special exception used as a control flow mechanism to return the result of a script
-                    returncode, stdout, stderr = event.exception.returncode, event.exception.stdout, event.exception.stderr
-                    job_execution = DjangoJobExecution.atomic_update_or_create(
-                        cls.lock,
-                        event.job_id,
-                        event.scheduled_run_time,
-                        DjangoJobExecution.SUCCESS if returncode == 0 else DjangoJobExecution.ERROR,
-                        returncode=returncode,
-                        stdout=stdout,
-                        stderr=stderr,
-                    )
-                else:
-                    if event.exception:
-                        exception = str(event.exception)
-                        traceback = str(event.traceback)
-                    else:
-                        exception = f"Job '{event.job_id}' raised an error!"
-                        traceback = None
 
-                    job_execution = DjangoJobExecution.atomic_update_or_create(
-                        cls.lock,
-                        event.job_id,
-                        event.scheduled_run_time,
-                        DjangoJobExecution.ERROR,
-                        exception=exception,
-                        traceback=traceback,
-                    )
+                if event.exception:
+                    exception = str(event.exception)
+                    traceback = str(event.traceback)
+                else:
+                    exception = f"Job '{event.job_id}' raised an error!"
+                    traceback = None
+
+                job_execution = DjangoJobExecution.atomic_update_or_create(
+                    cls.lock,
+                    event.job_id,
+                    event.scheduled_run_time,
+                    DjangoJobExecution.ERROR,
+                    exception=exception,
+                    traceback=traceback,
+                )
 
             elif event.code == events.EVENT_JOB_MISSED:
                 # Job execution will not have been logged yet - do so now
