@@ -18,7 +18,7 @@ class ScriptRunResult:
 
 
 def script_runner(script_name, script_args: str|None =None):
-    script_path = script_dir / script_name
+    script_path: Path = script_dir / script_name
     cmd = [
         sys.executable,
         '-u',
@@ -26,6 +26,9 @@ def script_runner(script_name, script_args: str|None =None):
     ]
     if script_args:
         cmd.extend(shlex.split(script_args))
+
+    if not script_path.exists():
+        raise FileNotFoundError(f"Script '{script_path}' not found")
 
     rc, out, err = run_cmd(cmd, shell=False)
     return ScriptRunResult(rc, out, err)
