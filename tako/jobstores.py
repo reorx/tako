@@ -12,6 +12,7 @@ from apscheduler.schedulers.base import BaseScheduler
 from django import db
 from django.db import IntegrityError, transaction
 
+from .api.task import ScriptRunResult
 from .models import DjangoJob, DjangoJobExecution
 from .utils import util
 from .utils.util import get_apscheduler_datetime, get_django_internal_datetime
@@ -93,12 +94,26 @@ class DjangoResultStoreMixin:
                 f"'{events.EVENT_JOB_EXECUTED}'."
             )
 
+        kwargs = {}
+        status = DjangoJobExecution.SUCCESS
+        print('retval', event.retval)
+        if isinstance(event.retval, ScriptRunResult):
+            returncode, stdout, stderr = event.retval.result
+            if returncode != 0:
+                status = DjangoJobExecution.ERROR
+            kwargs.update(
+                returncode=returncode,
+                stdout=stdout,
+                stderr=stderr,
+            )
+
         try:
             job_execution = DjangoJobExecution.atomic_update_or_create(
                 cls.lock,
                 event.job_id,
                 event.scheduled_run_time,
-                DjangoJobExecution.SUCCESS,
+                status,
+                **kwargs,
             )
         except IntegrityError:
             logger.warning(

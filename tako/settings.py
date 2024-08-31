@@ -158,6 +158,10 @@ LOGGING = {
             'handlers': ['stream'],
             'level': LOG_LEVEL_APP,
         },
+        'apscheduler': {
+            'handlers': ['stream'],
+            'level': LOG_LEVEL_APP,
+        },
 
         # Disable unnecessary 4xx log
         'django.request': {

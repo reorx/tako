@@ -4,6 +4,7 @@ from apscheduler.triggers.cron import CronTrigger
 from django.utils import autoreload
 
 from . import settings
+from .api.task import task_runner
 from .jobstores import DjangoJobStore
 from .models import DjangoJobExecution
 from .utils import util
@@ -90,9 +91,20 @@ def add_default_jobs(scheduler):
         replace_existing=True,
     )
 
+    scheduler.add_job(
+        test_script_job,
+        trigger=CronTrigger(minute="*/10"),  # Every 10 seconds
+        id="hello.py",  # The `id` assigned to each job MUST be unique
+        max_instances=1,
+        replace_existing=True,
+    )
+
 
 def test_job():
     print('hello')
     import time
     time.sleep(3)
     print('world')
+
+def test_script_job():
+    return task_runner('hello.py')
