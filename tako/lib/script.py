@@ -17,7 +17,7 @@ class ScriptRunResult:
         self.result = (returncode, stdout, stderr)
 
 
-def task_runner(script_name, script_args: str|None =None):
+def script_runner(script_name, script_args: str|None =None):
     script_path = script_dir / script_name
     cmd = [
         sys.executable,

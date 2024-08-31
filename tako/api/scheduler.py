@@ -5,9 +5,9 @@ from django.utils import autoreload
 
 from .. import settings
 from ..lib.jobstores import DjangoJobStore
+from ..lib.script import script_runner
 from ..models import DjangoJobExecution
 from ..utils import util
-from .task import task_runner
 
 
 # The `close_old_connections` decorator ensures that database connections, that have become
@@ -107,4 +107,4 @@ def test_job():
     print('world')
 
 def test_script_job():
-    return task_runner('hello.py')
+    return script_runner('hello.py')
