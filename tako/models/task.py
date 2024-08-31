@@ -20,7 +20,7 @@ class Task(models.Model):
     name = models.CharField(max_length=64, unique=True)
     job = models.OneToOneField(DjangoJob, null=True, on_delete=models.CASCADE)
     # will be processed by shlex.split(script_args) before passing to subprocess.Popen
-    script = models.ForeignKey('ScriptVersion', on_delete=models.DO_NOTHING)
+    script = models.ForeignKey('Script', on_delete=models.DO_NOTHING)
     script_args = models.TextField(null=True, blank=True)
 
     # trigger
@@ -38,16 +38,29 @@ class Task(models.Model):
         return f'Task<{model_to_dict(self)}>'
 
 
-class ScriptVersion(models.Model):
-    filename = models.CharField(max_length=64, db_index=True)
-    version = models.IntegerField()
+class Script(models.Model):
+    filename = models.CharField(max_length=64, unique=True)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.filename} - v{self.version}'
+        return f'{self.filename}'
+
+    class Meta:
+        db_table = 'tako_script'
+
+
+
+class ScriptVersion(models.Model):
+    script = models.ForeignKey('Script', on_delete=models.CASCADE)
+    version = models.IntegerField()
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.script} - v{self.version}'
 
     class Meta:
         db_table = 'tako_script_version'
-        unique_together = ['filename', 'version']
+        unique_together = ['script', 'version']

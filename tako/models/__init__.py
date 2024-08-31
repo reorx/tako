@@ -1,8 +1,8 @@
 from .job import DjangoJob, DjangoJobExecution
-from .task import ScriptVersion, Task
+from .task import Script, ScriptVersion, Task
 
 
 _models = [
     DjangoJob, DjangoJobExecution,
-    Task, ScriptVersion,
+    Task, Script, ScriptVersion,
 ]

@@ -10,16 +10,14 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from easy_select2 import Select2
 
 from .api.scheduler import get_scheduler
 from .api.task import (
-    create_or_update_script_from_obj, create_or_update_task_from_obj, delete_task,
-    get_latest_scripts
+    create_or_update_script_from_obj, create_or_update_task_from_obj, delete_task
 )
 from .api.types import CronTriggerDT, DateTriggerDT, IntervalTriggerDT
 from .lib.jobstores import DjangoJobStore, DjangoMemoryJobStore
-from .models import DjangoJob, DjangoJobExecution, ScriptVersion, Task
+from .models import DjangoJob, DjangoJobExecution, Script, ScriptVersion, Task
 from .utils import util
 
 
@@ -229,32 +227,16 @@ class TaskAdmin(admin.ModelAdmin):
                 delete_task(obj)
 
 
-class ScriptForm(forms.ModelForm):
-    filename = forms.CharField(widget=Select2(select2attrs={
-        'placeholder': 'Select a script or create a new one',
-        'tags': True,
-    }))
+@admin.register(Script)
+class ScriptAdmin(admin.ModelAdmin):
 
-    class Meta:
-        help_texts = {
-            'version': 'Version will be auto-incremented when a script with the same filename is created',
-        }
+    list_display = ["filename", "created_at", "updated_at"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        scripts = get_latest_scripts()
-        self.fields['filename'].widget.choices = [('', '')] + [
-            (i['filename'], f"{i['filename']} ({i['version']})")
-            for i in scripts
-        ]
+    def save_model(self, request, obj, form, change):
+        create_or_update_script_from_obj(obj)
 
 
 @admin.register(ScriptVersion)
 class ScriptVersionAdmin(admin.ModelAdmin):
-    form = ScriptForm
 
-    list_display = ["filename", "version", "created_at", "updated_at"]
-    readonly_fields = ['version']
-
-    def save_model(self, request, obj, form, change):
-        create_or_update_script_from_obj(obj)
+    list_display = ["script", "version", "created_at"]
