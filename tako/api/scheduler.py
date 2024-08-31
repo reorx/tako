@@ -3,11 +3,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from django.utils import autoreload
 
-from . import settings
-from .api.task import task_runner
-from .jobstores import DjangoJobStore
-from .models import DjangoJobExecution
-from .utils import util
+from .. import settings
+from ..lib.jobstores import DjangoJobStore
+from ..models import DjangoJobExecution
+from ..utils import util
+from .task import task_runner
 
 
 # The `close_old_connections` decorator ensures that database connections, that have become

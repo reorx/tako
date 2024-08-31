@@ -12,10 +12,10 @@ from apscheduler.schedulers.base import BaseScheduler
 from django import db
 from django.db import IntegrityError, transaction
 
-from .api.task import ScriptRunResult
-from .models import DjangoJob, DjangoJobExecution
-from .utils import util
-from .utils.util import get_apscheduler_datetime, get_django_internal_datetime
+from ..api.task import ScriptRunResult
+from ..models import DjangoJob, DjangoJobExecution
+from ..utils import util
+from ..utils.util import get_apscheduler_datetime, get_django_internal_datetime
 
 
 logger = logging.getLogger(__name__)

@@ -18,7 +18,7 @@ application = get_wsgi_application()
 print('wsgi application')
 
 
-from .scheduler import init_scheduler, start_scheduler
+from .api.scheduler import init_scheduler, start_scheduler
 
 
 start_scheduler(init_scheduler())

@@ -9,7 +9,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .jobstores import DjangoJobStore, DjangoMemoryJobStore
+from .lib.jobstores import DjangoJobStore, DjangoMemoryJobStore
 from .models import DjangoJob, DjangoJobExecution
 from .utils import util
 
@@ -60,7 +60,7 @@ class DjangoJobAdmin(admin.ModelAdmin):
     actions = ["run_selected_jobs"]
 
     def run_selected_jobs(self, request, queryset):
-        from .scheduler import background_scheduler as scheduler
+        from .api.scheduler import background_scheduler as scheduler
 
         for item in queryset:
             django_job, job = self._django_jobstore.lookup_job_v2(item.id)
