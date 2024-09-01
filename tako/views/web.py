@@ -91,6 +91,9 @@ class TasksView(ListView):
     def get_template_names(self):
         return 'tasks.html'
 
+    def get_queryset(self):
+        return Task.objects.select_related('job', 'script').defer('script__content').all().order_by('-updated_at')
+
 
 class ExecutionsDetailView(DetailView):
     model = DjangoJobExecution
@@ -109,3 +112,8 @@ class JobsDetailView(DetailView):
 class TasksDetailView(DetailView):
     def get_template_names(self):
         return 'tasks_detail.html'
+
+
+class ScriptsDetailView(DetailView):
+    def get_template_names(self):
+        return 'scripts_detail.html'

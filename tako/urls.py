@@ -18,6 +18,8 @@ tako_urls = [
     path('jobs/<str:id>', web.JobsDetailView.as_view(), name='jobs_detail'),
     path('tasks', web.TasksView.as_view(), name='tasks'),
     path('tasks/<int:id>', web.TasksDetailView.as_view(), name='tasks_detail'),
+    path('scripts/<int:id>', web.ScriptsDetailView.as_view(), name='scripts_detail'),
+
     path('api/', include([
         path('executions-tsdata', api.ExecutionsTSDataView.as_view(), name='api_executions_tsdata'),
     ]))

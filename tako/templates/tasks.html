@@ -5,32 +5,20 @@
 {% endblock %}
 
 {% block main %}
-<h1>Jobs</h1>
-
-<section class="container">
-  <div class="filters-group">
-    <div>
-      <label>Associated with Task:</label>
-      <div class="form-group">
-        <label class="form-radio form-inline">
-          <input type="radio" name="gender" checked=""><i class="form-icon"></i> Yes
-        </label>
-        <label class="form-radio form-inline">
-          <input type="radio" name="gender"><i class="form-icon"></i> No
-        </label>
-      </div>
-    </div>
-  </div>
-</section>
+<h1>Tasks</h1>
 
 <section>
   <table class="table">
   {% if object_list %}
     <thead>
       <th style="width: 5em;">ID</th>
-      <th>Task</th>
-      <th>Trigger</th>
-      <th style="width: 15em;">Next run time</th>
+      <th>Name</th>
+      <th>Job</th>
+      <th>Script</th>
+      <th>Trigger Type</th>
+      <th>Trigger Args</th>
+      <th style="width: 15em;">Created At</th>
+      <th style="width: 15em;">Updated At</th>
       {% if request.user.is_superuser %}
         <th style="width: 5em;">Actions</th>
       {% endif %}
@@ -38,20 +26,31 @@
   {% endif %}
     <tbody>
     {% for obj in object_list %}
-      {% with aps_job=obj.aps_job %}
       <tr>
-        <td><a href="{% url 'jobs_detail' obj.id %}" class="number-font">{{ obj.id }}</a></td>
+        <td>{{ obj.id }}</td>
         <td>
-          {% if obj.task %}
-            <a href="{% url 'tasks_detail' obj.task.id %}">
-              {{ obj.task.name }}
+          <a href="{% url 'tasks_detail' obj.id %}">{{ obj.name }}</a>
+        </td>
+        <td>
+          {% if obj.job %}
+            <a href="{% url 'jobs_detail' obj.job.id %}">
+              {{ obj.job.id }}
             </a>
           {% endif %}
         </td>
         <td>
-          <code>{{ aps_job.trigger }}</code>
+          <a href="{% url 'scripts_detail' obj.script.id %}">
+            {{ obj.script.filename }}
+          </a>
         </td>
-        <td><span class="number-font">{{ obj.next_run_time|iso_time }}</span></td>
+        <td>
+          {{ obj.trigger_type }}
+        </td>
+        <td>
+          {{ obj.trigger_value }}
+        </td>
+        <td><span class="number-font">{{ obj.created_at|iso_time }}</span></td>
+        <td><span class="number-font">{{ obj.updated_at|iso_time }}</span></td>
 
         {% if request.user.is_superuser %}
         <td>
@@ -67,10 +66,9 @@
         </td>
         {% endif %}
       </tr>
-      {% endwith %}
 
       {% empty %}
-      <tr>No jobs yet.</tr>
+      <tr>No tasks yet.</tr>
     {% endfor %}
     </tbody>
   </table>
