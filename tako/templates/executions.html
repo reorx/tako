@@ -34,7 +34,7 @@
       </div>
 
       <div>
-        <div class="btn-group">
+        <div class="btn-group filter-status">
         {% for status in DjangoJobExecution.STATUSES %}
           <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
         {% endfor %}
@@ -97,6 +97,25 @@
         elements: '.pagination a',
         selectors: ['#executions-main'],
         // cacheBust: false,
+      });
+
+      // status filter
+      const executionsUrl = '{% url "executions" %}';
+      document.querySelector('.filter-status').addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+          const status = e.target.textContent;
+          const params = new URLSearchParams(window.location.search);
+
+          // toggle status from params
+          const paramsStatus = params.getAll('status')
+          if (paramsStatus.includes(status)) {
+            params.delete('status', status)
+          } else {
+            params.append('status', status)
+          }
+          const paramsStr = params.toString()
+          window.location = executionsUrl + (paramsStr ? '?' + paramsStr : '')
+        }
       });
 
       // event drops
