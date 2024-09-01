@@ -68,6 +68,14 @@ class DjangoJobExecution(models.Model):
     MAX_INSTANCES = "MAX_INSTANCES"
     ERROR = "ERROR"
 
+    STATUSES = [
+        SUCCESS,
+        ERROR,
+        SENT,
+        MISSED,
+        MAX_INSTANCES,
+    ]
+
     STATUS_CHOICES = [
         (x, x)
         for x in [

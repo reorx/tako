@@ -9,7 +9,7 @@ from ..models.job import DjangoJobExecution
 # TODO import job_store
 # from .myjobs import job_store
 from ..templatetags.tako_filters import get_spectre_label_class
-from .base import APIView, executions_queryset
+from .base import APIView, filter_executions_qs
 
 
 class TaskExecuteView(APIView):
@@ -50,8 +50,10 @@ class ExecutionsTSDataView(APIView):
     is_json = False
 
     def get(self, request):
-        qs = executions_queryset(self, DjangoJobExecution.objects.select_related('job').defer('job__job_state').all()).order_by('-run_time')
-        qs = qs[:self.ts_items_limit]
+        qs = filter_executions_qs(
+            request,
+            DjangoJobExecution.objects.select_related('job').defer('job__job_state').all()
+        )[:self.ts_items_limit]
 
         # categorize by status
         tsdict = {}

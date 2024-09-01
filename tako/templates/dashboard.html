@@ -37,14 +37,14 @@
 
   <section>
     <h2>Successful executions
-      <a class="sublink" href="{{ True|executions_url }}">more</a>
+      <a class="sublink" href="{% url 'executions' %}?{{ 'SUCCESS'|status_params|encode_params_with_page }}">more</a>
     </h2>
     {% include "execution_table.html" with executions=success_list %}
   </section>
 
   <section>
     <h2>Other status executions
-      <a class="sublink" href="{{ False|executions_url }}">more</a>
+      <a class="sublink" href="{% url 'executions' %}?{{ 'SUCCESS'|status_params:True|encode_params_with_page }}">more</a>
     </h2>
     {% include "execution_table.html" with executions=error_list %}
   </section>
@@ -57,7 +57,7 @@
   <script>
     (function() {
       var chart_el = document.getElementById('event-drops-chart');
-      fetch('{{ "api/executions-tsdata"|tako_url }}')
+      fetch('{% url "api_executions_tsdata" %}')
       .then(function(resp) {
         return resp.json();
       }).then(function(data) {

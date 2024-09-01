@@ -1,7 +1,6 @@
 from urllib.parse import urlencode
 
 from django import template
-from django.conf import settings
 from django.utils.timezone import localtime
 
 from ..models import DjangoJobExecution
@@ -42,40 +41,23 @@ def iso_time(t):
     return localtime(t).strftime(iso_time_format)
 
 
-def url_(path):
-    return f'/{settings.TAKO_URL_PREFIX}{path}'
+@register.filter
+def status_params(status, reverse=False):
+    if reverse:
+        statuses = set(DjangoJobExecution.STATUSES) - {status}
+    else:
+        statuses = status
+    return {
+        'status': statuses,
+    }
 
 
 @register.filter
-def tako_url(path):
-    return url_(path)
-
-
-@register.filter
-def execution_url(id):
-    return url_(f'executions/{id}')
-
-
-@register.filter
-def job_url(id):
-    return url_(f'jobs/{id}')
-
-
-@register.filter
-def task_url(id):
-    return url_(f'tasks/{id}')
-
-
-@register.filter
-def executions_url(is_success):
-    return url_(f'executions?is_success={is_success}')
-
-
-@register.filter
-def url_query_with_page(args, page):
-    newargs = dict(args)
-    newargs['page'] = page
-    return urlencode(newargs)
+def encode_params_with_page(params, page=None):
+    newparams = dict(params)
+    if page is not None:
+        newparams['page'] = page
+    return urlencode(newparams, True)
 
 
 @register.filter

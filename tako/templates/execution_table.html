@@ -16,17 +16,17 @@
   <tbody>
   {% for exec in executions %}
     <tr>
-      <td><a href="{{ exec.id|execution_url }}" class="number-font">{{ exec.id }}</a></td>
+      <td><a href="{% url 'executions_detail' exec.id %}" class="number-font">{{ exec.id }}</a></td>
       <td>
         {% with aps_job=exec.job.aps_job %}
         <code>{{ aps_job.name }} | {{ aps_job.trigger }} </code>
         {% endwith %}
 
-        <a href="{{ exec.job.id|job_url }}" title="job executions">
+        <a href="{% url 'jobs_detail' exec.job.id %}" title="job executions">
           <span class="chip">Job</span>
         </a>
         {% if exec.job.task %}
-          <a href="{{ exec.job.task.id|task_url }}">
+          <a href="{% url 'tasks_detail' exec.job.task.id %}">
             <span class="chip">Task</span>
           </a>
         {% endif %}
