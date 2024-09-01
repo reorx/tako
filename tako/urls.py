@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import models
-from .views import web
+from .views import api, web
 
 
 _ = models
@@ -29,7 +29,9 @@ tako_urls = [
     path('dashboard', web.DashboardView.as_view(), name='dashboard'),
     # path('executions', ExecutionsView.as_view(), name='executions'),
     # path('executions/<int:pk>', ExecutionItemView.as_view(), name='execution_item'),
-    # path('executions-tsdata', ExecutionsTSDataView.as_view(), name='executions-tsdata'),
+    path('api/', include([
+        path('executions-tsdata', api.ExecutionsTSDataView.as_view(), name='executions-tsdata'),
+    ]))
 
     # # task
     # path('api/task/execute', TaskExecuteView.as_view()),

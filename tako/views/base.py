@@ -1,13 +1,21 @@
+
 import json
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Q
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.core.serializers.json import DjangoJSONEncoder
-from .errors import ParamsError
+
+from ..models import DjangoJobExecution
 
 
-class UtilMixin:
+class ParamsError(Exception):
+    pass
+
+
+class ParamsMixin:
     def get_param(self, key, type_class, default=None):
         v = self.request.GET.get(key, '')
         if not v:
@@ -18,8 +26,8 @@ class UtilMixin:
             raise ParamsError(str(e))
 
 
-class APIView(UtilMixin, View):
-    superuser_requried = False
+class APIView(ParamsMixin, View):
+    superuser_required = False
     is_json = True
 
     @method_decorator(csrf_exempt)
@@ -64,3 +72,33 @@ class APIView(UtilMixin, View):
             status=status,
             **kwargs,
         )
+
+
+
+def filter_execution_by_success(qs, is_success):
+    if is_success:
+        qs = qs.filter(status=DjangoJobExecution.SUCCESS)
+    else:
+        qs = qs.filter(~Q(status=DjangoJobExecution.SUCCESS))
+    return qs
+
+
+def executions_queryset(self, qs):
+    self.qs_args = []
+
+    def append_qs_arg(k, v):
+        if v is not None:
+            self.qs_args.append((k, v))
+
+    job_id = self.get_param('job_id', int)
+    append_qs_arg('job_id', job_id)
+
+    status = self.get_param('status', str)
+    append_qs_arg('status', status)
+
+    if job_id:
+        qs = qs.filter(task_trigger_id=job_id)
+    if status:
+        qs = filter_execution_by_success(qs, status == DjangoJobExecution.SUCCESS)
+
+    return qs

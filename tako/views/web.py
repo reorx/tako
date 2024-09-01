@@ -1,13 +1,12 @@
-from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
 # TODO import new run task function
 # from .admin import run_task
-from ..helper.view import UtilMixin
 from ..models.job import DjangoJobExecution
 from ..templatetags.tako_filters import url_
+from .base import ParamsMixin, executions_queryset, filter_execution_by_success
 
 
 # TODO import models
@@ -20,15 +19,7 @@ def index(req):
     return HttpResponseRedirect(url_('dashboard'))
 
 
-def filter_execution_by_success(qs, is_success):
-    if is_success:
-        qs = qs.filter(status=DjangoJobExecution.SUCCESS)
-    else:
-        qs = qs.filter(~Q(status=DjangoJobExecution.SUCCESS))
-    return qs
-
-
-class DashboardView(UtilMixin, TemplateView):
+class DashboardView(ParamsMixin, TemplateView):
     template_name = 'dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -49,7 +40,7 @@ class DashboardView(UtilMixin, TemplateView):
         return context
 
 
-class ExecutionsView(UtilMixin, ListView):
+class ExecutionsView(ParamsMixin, ListView):
     # model = ManagerJobExecution
     paginate_by = 25
 
@@ -63,7 +54,7 @@ class ExecutionsView(UtilMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return executions_get_queryset(self, qs).order_by('-run_time')
+        return executions_queryset(self, qs).order_by('-run_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,27 +70,6 @@ class ExecutionsView(UtilMixin, ListView):
         )
         context['page_ellipsis'] = self.page_ellipsis
         return context
-
-
-def executions_get_queryset(self, qs):
-    self.qs_args = []
-
-    def append_qs_arg(k, v):
-        if v is not None:
-            self.qs_args.append((k, v))
-
-    trigger_id = self.get_param('trigger_id', int)
-    append_qs_arg('trigger_id', trigger_id)
-
-    status_category = self.get_param('status_category', str)
-    append_qs_arg('status_category', status_category)
-
-    if trigger_id:
-        qs = qs.filter(task_trigger_id=trigger_id)
-    if status_category:
-        qs = filter_execution_by_success(qs, status_category)
-
-    return qs
 
 
 class ExecutionItemView(DetailView):

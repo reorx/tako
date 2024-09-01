@@ -12,6 +12,10 @@ register = template.Library()
 
 @register.filter
 def spectre_label_class(status):
+    return get_spectre_label_class(status)
+
+
+def get_spectre_label_class(status):
     if status == DjangoJobExecution.SUCCESS:
         return 'label-success'
     if status == DjangoJobExecution.ERROR:
@@ -40,6 +44,11 @@ def iso_time(t):
 
 def url_(path):
     return f'/{settings.TAKO_URL_PREFIX}{path}'
+
+
+@register.filter
+def tako_url(path):
+    return url_(path)
 
 
 @register.filter

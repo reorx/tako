@@ -25,15 +25,15 @@
   <p>Now: <span class="number-font">{{ now|iso_time }}</span></p>
 
   <section>
-    <h2>Executions</h2>
-
-    {% include "execution_table.html" with executions=all_list %}
-  </section>
-
-  <section>
     <div id="event-drops-chart" style="height: 170px;">
       <div class="loading loading-lg" style="position: relative; top: 40px;"></div>
     </div>
+  </section>
+
+  <section>
+    <h2>Executions</h2>
+
+    {% include "execution_table.html" with executions=all_list %}
   </section>
 
   <section>
@@ -58,7 +58,7 @@
   <script>
     (function() {
       var chart_el = document.getElementById('event-drops-chart');
-      fetch('/executions-tsdata')
+      fetch('{{ "api/executions-tsdata"|tako_url }}')
       .then(function(resp) {
         return resp.json();
       }).then(function(data) {

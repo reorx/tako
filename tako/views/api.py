@@ -3,13 +3,13 @@ from django.forms.models import model_to_dict
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.db import get_x_by_y
-from ..helper.view import APIView
-
-
+from ..models.job import DjangoJobExecution
 # TODO import models
 # from .models import ManagerJob, ManagerJobExecution, ManagerTask, standard_status
 # TODO import job_store
 # from .myjobs import job_store
+from ..templatetags.tako_filters import get_spectre_label_class
+from .base import APIView, executions_queryset
 
 
 class TaskExecuteView(APIView):
@@ -47,24 +47,24 @@ class JobCancelView(APIView):
 class ExecutionsTSDataView(APIView):
     ts_items_limit = 1000
     time_format = '%Y-%m-%dT%H:%M:%S%z'
+    is_json = False
 
     def get(self, request):
-        qs = executions_get_queryset(self, ManagerJobExecution.objects.all()).order_by('-run_time')
+        qs = executions_queryset(self, DjangoJobExecution.objects.select_related('job').defer('job__job_state').all()).order_by('-run_time')
         qs = qs[:self.ts_items_limit]
 
         # categorize by status
         tsdict = {}
         for i in qs:
-            status = standard_status(i.status)
             d = {
                 'id': i.id,
                 'date': i.run_time.strftime(self.time_format),
-                'status': status,
-                'status_class': spectre_label_class_func(i.status),
-                'trigger_str': i.trigger_str,
+                'status': i.status,
+                'status_class': get_spectre_label_class(i.status),
+                'job_id': i.job.id,
                 'duration': f'{i.duration}s' if i.duration is not None else '-',
             }
-            l = tsdict.setdefault(status, [])
+            l = tsdict.setdefault(i.status, [])
             l.append(d)
 
         data = []
@@ -74,4 +74,4 @@ class ExecutionsTSDataView(APIView):
                 'name': k,
                 'data': v,
             })
-        return JsonResponse(data, safe=False)
+        return self.json_response(data)
