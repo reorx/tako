@@ -13,10 +13,14 @@
   <link rel="stylesheet" href="/static/base.css">
   <script>
     const TAKO = {
+      urls: {
+        executions: "{% url 'executions' %}",
+        executionsTsdata: "{% url 'api_executions_tsdata' %}",
+      },
       setSearchParams: function(params) {
         const paramsStr = params.toString()
         window.location = window.location.pathname + (paramsStr ? '?' + paramsStr : '')
-      }
+      },
     }
   </script>
   {% block head %}

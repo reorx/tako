@@ -1,4 +1,4 @@
-var draw_event_drops = function(el, data, margin) {
+TAKO.draw_event_drops = function(el, data, margin) {
   var now = new Date();
   var tooltip = d3
     .select('body')
@@ -61,7 +61,7 @@ var draw_event_drops = function(el, data, margin) {
         .style('pointer-events', 'none');
       },
       onClick: function(data) {
-        window.open('/executions/' + data.id, '_blank');
+        window.open(TAKO.urls.executions + '/' + data.id, '_blank');
       },
     },
     range: {
@@ -93,3 +93,11 @@ var draw_event_drops = function(el, data, margin) {
   // console.log('data', data);
   d3.select(el).data([data]).call(chart);
 };
+
+
+TAKO.fetchExecutionsTsdata = function() {
+  return fetch(TAKO.urls.executionsTsdata + window.location.search)
+    .then(function(resp) {
+      return resp.json();
+    })
+}

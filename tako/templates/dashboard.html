@@ -45,16 +45,14 @@
   <script>
     (function() {
       var chart_el = document.getElementById('event-drops-chart');
-      fetch('{% url "api_executions_tsdata" %}')
-      .then(function(resp) {
-        return resp.json();
-      }).then(function(data) {
+
+      TAKO.fetchExecutionsTsdata().then(data => {
         document.querySelectorAll('.loading').forEach(function(e) {
           e.remove();
         });
-        draw_event_drops(chart_el, data, {left: -60, right: 10, bottom: 0});
+        TAKO.draw_event_drops(chart_el, data, {left: -60, right: 10, bottom: 0});
         chart_el.removeAttribute('style');
-      });
+      })
     })();
   </script>
 {% endblock %}
