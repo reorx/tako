@@ -13,7 +13,7 @@ tako_urls = [
     path('', web.index),
     path('dashboard', web.DashboardView.as_view(), name='dashboard'),
     path('executions', web.ExecutionsView.as_view(), name='executions'),
-    path('executions/<int:id>', web.ExecutionsDetailView.as_view(), name='executions_detail'),
+    path('executions/<int:slug>', web.ExecutionsDetailView.as_view(), name='executions_detail'),
     path('jobs', web.JobsView.as_view(), name='jobs'),
     path('jobs/<str:id>', web.JobsDetailView.as_view(), name='jobs_detail'),
     path('tasks', web.TasksView.as_view(), name='tasks'),

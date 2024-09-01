@@ -90,15 +90,12 @@ class TasksView(ListView):
 
 
 class ExecutionsDetailView(DetailView):
-    # model = ManagerJobExecution
+    model = DjangoJobExecution
+
+    slug_field = 'id'
 
     def get_template_names(self):
         return 'executions_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['execution'] = self.object
-        return context
 
 
 class JobsDetailView(DetailView):

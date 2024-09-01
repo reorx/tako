@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load tako_filters %}
+
+{% block head %}
+<style>
+  td > pre {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-family: Monaco, Consolas, Courier, monospace;
+    font-size: .9em;
+    margin: 0;
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+  <h1>Execution Detail</h1>
+
+  <section>
+    <h2>Info</h2>
+    <table class="table">
+      <thead>
+      <tr>
+        <th style="width: 8em;">Key</th>
+        <th>Value</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>ID</td>
+        <td class="number-font">{{ object.id }}</td>
+      </tr>
+      <tr>
+        <td>Status</td>
+        <td>
+          <span class="label {{ object.status|spectre_label_class }} tooltip tooltip-right"
+           data-tooltip="{{ object.status }}">
+            {{ object.status }}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Job</td>
+        <td>
+          <a href="{% url 'jobs_detail' object.job_id %}" title="trigger executions">{{ object.job_id}}</a>
+          <button
+            class="btn btn-sm btn-execute-job"
+            title="Click to execute this job's task"
+            style="display: inline-block;"
+            data-task-id="{{object.job.task.id}}"
+          >
+            <i class="icon icon-refresh"></i>
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td>Run time</td>
+        <td class="number-font">{{ object.run_time|iso_time }}</td>
+      </tr>
+      <tr>
+        <td>Duration</td>
+        <td class="number-font">{{ object.duration|duration }}</td>
+      </tr>
+      <tr>
+        <td>Return code</td>
+        <td class="number-font">{{ object.returncode }}</td>
+      </tr>
+      <tr>
+        <td>Env</td>
+        <td>
+          {% if object.env %}
+            <pre><code>{{ object.env }}</code></pre>
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  {% if object.traceback %}
+  <section>
+    <h2>Traceback</h2>
+    <pre class="code"><code>{{ object.traceback }}</code></pre>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>STDOUT</h2>
+    <pre class="code"><code>{{ object.stdout }}</code></pre>
+  </section>
+
+  <section>
+    <h2>STDERR</h2>
+    <pre class="code"><code>{{ object.stderr }}</code></pre>
+  </section>
+{% endblock %}
+
+{% block body_end %}
+  <script>
+    // execute task
+    (function() {
+      var executeBtns = document.getElementsByClassName('btn-execute');
+      [].slice.call(executeBtns).forEach(function(x) {
+        x.addEventListener('mouseup', function(e) {
+          var dom = e.target;
+          var taskid = Number(dom.dataset.taskId);
+          if (!confirm("Are you sure to execute task " + taskid + ' ?')) {
+            return
+          }
+          fetch('/api/task/execute', {
+            method: 'POST',
+            body: JSON.stringify({
+              task_id: taskid,
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          }).then(function(res) {
+            console.log(res.json());
+            location.reload();
+          }).catch(function(err) {
+            console.error(err);
+          })
+        })
+      })
+    })();
+  </script>
+{% endblock %}
