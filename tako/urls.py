@@ -13,8 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from . import models
 from .views import web
@@ -23,16 +24,8 @@ from .views import web
 _ = models
 
 
-title = 'Tako - The Embedded Tasks Manager'
-admin.site.site_header = title
-admin.site.site_title = title
-admin.site.index_title = title
-admin.site.site_url = '/dashboard'
-
-
-urlpatterns = [
+tako_urls = [
     path('', web.index),
-    path('admin/', admin.site.urls),
     path('dashboard', web.DashboardView.as_view(), name='dashboard'),
     # path('executions', ExecutionsView.as_view(), name='executions'),
     # path('executions/<int:pk>', ExecutionItemView.as_view(), name='execution_item'),
@@ -43,4 +36,11 @@ urlpatterns = [
 
     # # job
     # path('api/job/cancel', JobCancelView.as_view()),
+]
+
+tako_urlpath = path(settings.TAKO_URL_PREFIX, include(tako_urls))
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    tako_urlpath,
 ]

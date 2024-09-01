@@ -1,13 +1,15 @@
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from django.views.generic import DetailView
-from django.views.generic.list import ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.view import UtilMixin
 from ..models.job import DjangoJobExecution
+from ..templatetags.tako_filters import url_
+
+
 # TODO import models
 # from .models import ManagerJob, ManagerJobExecution, ManagerTask, standard_status
 # TODO import job_store
@@ -15,7 +17,7 @@ from ..models.job import DjangoJobExecution
 
 
 def index(req):
-    return HttpResponseRedirect('/dashboard')
+    return HttpResponseRedirect(url_('dashboard'))
 
 
 def filter_execution_by_success(qs, is_success):
@@ -26,27 +28,24 @@ def filter_execution_by_success(qs, is_success):
     return qs
 
 
-class DashboardView(UtilMixin, ListView):
-    model = DjangoJobExecution
-
-    def get_template_names(self):
-        return 'dashboard.html'
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        limit = self.get_param('limit', int, 20)
-        return qs[:limit]
+class DashboardView(UtilMixin, TemplateView):
+    template_name = 'dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
 
         limit = self.get_param('limit', int, 20)
+        sub_limit = self.get_param('sub_limit', int, 10)
 
-        qs = DjangoJobExecution.objects.select_related('job', 'job__task').all()
+        qs = DjangoJobExecution.objects.select_related('job', 'job__task').all().order_by('-run_time')
 
-        context['success_list'] = filter_execution_by_success(qs, True).order_by('-run_time')[:limit]
-        context['exception_list'] = filter_execution_by_success(qs, False).order_by('-run_time')[:limit]
+        context.update(
+            all_list=qs[:limit],
+            success_list=filter_execution_by_success(qs, True)[:sub_limit],
+            error_list=filter_execution_by_success(qs, False)[:sub_limit],
+        )
+
         return context
 
 

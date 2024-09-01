@@ -1,0 +1,59 @@
+{% load tako_filters %}
+<table class="table">
+{% if executions %}
+  <thead>
+    <th style="width: 5em;">ID</th>
+    <th>Job / Task</th>
+    <th style="width: 6em;">Status</th>
+    <th style="width: 5em;">Duration</th>
+    <th style="width: 15em;">Run time</th>
+    <th style="width: 15em;">Next run time</th>
+    {% if request.user.is_authenticated and request.user.is_superuser %}
+      <th style="width: 5em;">Actions</th>
+    {% endif %}
+  </thead>
+{% endif %}
+  <tbody>
+  {% for exec in executions %}
+    <tr>
+      <td><a href="{{ exec.id|job_url }}" class="number-font">{{ exec.id }}</a></td>
+      <td>
+        {% with aps_job=exec.job.aps_job %}
+        <code>{{ aps_job.name }} | {{ aps_job.trigger }} </code>
+        {% endwith %}
+
+        <a href="{{ exec.job.id|job_url }}" title="job executions">
+          <span class="chip">Job</span>
+        </a>
+        {% if exec.job.task %}
+          <a href="{{ exec.job.task.id|task_url }}">
+            <span class="chip">Task</span>
+          </a>
+        {% endif %}
+      </td>
+      <td><span class="label {{ exec.status|spectre_label_class }}">{{ exec.status }}</span></td>
+      <td><span class="number-font">{{ exec.duration|duration }}</span></td>
+      <td>
+        <span class="number-font">{{ exec.run_time|iso_time }}</span>
+      </td>
+      <td><span class="number-font">{{ exec.job.next_run_time|iso_time }}</span></td>
+      {% if request.user.is_authenticated and request.user.is_superuser %}
+      <td>
+        <button class="btn btn-sm btn-execute" title="execute task now" data-task-id="{{exec.task.id}}">
+          <i class="icon icon-refresh"></i>
+        </button>
+        {% if exec.task_trigger.create_type == 'instant_task' %}
+          <button class="btn btn-sm btn-cancel-job" data-job-id="{{exec.id}}">
+            <i class="icon icon-minus"></i>
+          </button>
+        {% endif %}
+      </td>
+      {% endif %}
+      </td>
+    </tr>
+
+    {% empty %}
+    <tr>No executions yet.</tr>
+  {% endfor %}
+  </tbody>
+</table>

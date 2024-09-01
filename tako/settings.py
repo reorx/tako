@@ -23,6 +23,7 @@ class Env(EnvBase):
     APP_ENV = (str, 'local')
     SCRIPTS_DIR = (str, 'local_scripts')
     WORKERS_NUM = (int, 2)
+    TAKO_URL_PREFIX = (str, 'tako/')
 
     # Connections
     ## Database
@@ -61,7 +62,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 if not DEBUG:
     CSRF_TRUSTED_ORIGINS = ['https://neocm.sechnic.net']
 
-ADMIN_TITLE = 'neocm Admin'
+ADMIN_TITLE = 'Tako Admin'
+
+
+# Tako specific
+
+TAKO_URL_PREFIX = Env.TAKO_URL_PREFIX
 
 
 # Application definition

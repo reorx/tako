@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load tako_filters %}
+
+{% block head %}
+<style>
+  table {
+    font-size: 15px;
+  }
+  td > code {
+    color: #333;
+    background: inherit;
+  }
+  td {
+    line-height: 1.1em;
+  }
+  td a {
+    display: inline-block;
+  }
+</style>
+{% endblock %}
+
+
+{% block main %}
+  <h1>Dashboard</h1>
+  <p>Now: <span class="number-font">{{ now|iso_time }}</span></p>
+
+  <section>
+    <h2>Executions</h2>
+
+    {% include "execution_table.html" with executions=all_list %}
+  </section>
+
+  <section>
+    <div id="event-drops-chart" style="height: 170px;">
+      <div class="loading loading-lg" style="position: relative; top: 40px;"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Successful executions
+      <a class="sublink" href="{{ True|executions_url }}">more</a>
+    </h2>
+    {% include "execution_table.html" with executions=success_list %}
+  </section>
+
+  <section>
+    <h2>Other status executions
+      <a class="sublink" href="{{ False|executions_url }}">more</a>
+    </h2>
+    {% include "execution_table.html" with executions=error_list %}
+  </section>
+{% endblock %}
+
+{% block body_end %}
+  <script src="/static/d3.min.js"></script>
+  <script src="/static/event-drops@1.2.0.min.js"></script>
+  <script src="/static/event-drops-utils.js"></script>
+  <script>
+    (function() {
+      var chart_el = document.getElementById('event-drops-chart');
+      fetch('/executions-tsdata')
+      .then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
+        document.querySelectorAll('.loading').forEach(function(e) {
+          e.remove();
+        });
+        draw_event_drops(chart_el, data, {left: -60, right: 15, bottom: 0});
+        chart_el.removeAttribute('style');
+      });
+    })();
+
+  </script>
+  <script src="/static/execution_table.js"></script>
+{% endblock %}

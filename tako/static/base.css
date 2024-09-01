@@ -1,0 +1,99 @@
+h1 {
+  font-size: 2em;
+}
+h2 {
+  font-size: 1.5em;
+}
+
+.table td, .table th {
+  padding: .5em .4em;
+}
+
+.label.label-success {
+  background: #ade0bc;
+  color: #03502E;
+}
+.label.label-error {
+  background: #efc8bf;
+  color: #a02600;
+}
+
+a:visited {
+    color: #5755d9;
+}
+
+.header-bar {
+  position: absolute;
+  top: 1em;
+  right: 2em;
+}
+.header-bar > a {
+  display: inline-block;
+  margin: 0 .5em;
+  padding: 0 .3em;
+}
+
+.main {
+  padding: 2em;
+}
+
+section {
+  margin-bottom: 1.5em;
+}
+
+.number-font {
+  font-family: "Andale Mono", Consolas, Courier, monospace;
+  font-size: .9em;
+}
+
+.right-align {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+h2 > .sublink {
+  font-size: .8rem;
+  margin-left: .8rem;
+  font-weight: normal;
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.drop {
+  cursor: pointer;
+}
+.ed-tooltip {
+  position: absolute;
+  padding: .8em;
+  width: 30em;
+  font-size: .9em;
+
+  background: #fff;
+  border-radius: .1rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(48,55,66,.3);
+}
+.ed-tooltip > div:first-child {
+  margin-bottom: .5em;
+}
+.ed-tooltip > div > span {
+  margin-right: .5em;
+}
+
+/*
+.ed-tooltip::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -.5em;
+    left: 1.2em;
+    width: 1em;
+    height: 1em;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-width: 1px 0 0 1px;
+    transform: rotate(45deg);
+    z-index: 1;
+}
+*/
