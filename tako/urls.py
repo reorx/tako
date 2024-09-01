@@ -14,7 +14,9 @@ tako_urls = [
     path('dashboard', web.DashboardView.as_view(), name='dashboard'),
     path('executions', web.ExecutionsView.as_view(), name='executions'),
     path('executions/<int:id>', web.ExecutionsDetailView.as_view(), name='executions_detail'),
+    path('jobs', web.JobsView.as_view(), name='jobs'),
     path('jobs/<str:id>', web.JobsDetailView.as_view(), name='jobs_detail'),
+    path('tasks', web.TasksView.as_view(), name='tasks'),
     path('tasks/<int:id>', web.TasksDetailView.as_view(), name='tasks_detail'),
     path('api/', include([
         path('executions-tsdata', api.ExecutionsTSDataView.as_view(), name='api_executions_tsdata'),

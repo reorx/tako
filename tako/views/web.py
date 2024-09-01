@@ -3,7 +3,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
-from ..models.job import DjangoJobExecution
+from ..models.job import DjangoJob, DjangoJobExecution
+from ..models.task import Task
 from .base import filter_executions_qs, get_page_range, get_param
 
 
@@ -72,6 +73,20 @@ class ExecutionsView(ListView):
             DjangoJobExecution=DjangoJobExecution,
         )
         return context
+
+
+class JobsView(ListView):
+    model = DjangoJob
+
+    def get_template_names(self):
+        return 'jobs.html'
+
+
+class TasksView(ListView):
+    model = Task
+
+    def get_template_names(self):
+        return 'tasks.html'
 
 
 class ExecutionsDetailView(DetailView):
