@@ -62,11 +62,11 @@ class DjangoJobExecutionManager(models.Manager):
 
 
 class DjangoJobExecution(models.Model):
-    SENT = "Started execution"
-    SUCCESS = "Executed"
-    MISSED = "Missed!"
-    MAX_INSTANCES = "Max instances!"
-    ERROR = "Error!"
+    SENT = "SENT"
+    SUCCESS = "SUCCESS"
+    MISSED = "MISSED"
+    MAX_INSTANCES = "MAX_INSTANCES"
+    ERROR = "ERROR"
 
     STATUS_CHOICES = [
         (x, x)
