@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -64,7 +66,9 @@ def start_scheduler(scheduler):
     scheduler.start()
     print("*Scheduler started")
 
-    def stop_scheduler(**kwargs):
+    def stop_scheduler(file_path: Path = None, **kwargs):
+        if file_path.suffix != ".py":
+            return
         print("*Stopping scheduler...")
         scheduler.shutdown()
         print("*Scheduler shut down successfully!")

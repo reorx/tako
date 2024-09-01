@@ -18,7 +18,7 @@ class Task(models.Model):
     """
     # name is the id of ScriptTask, which is also used to generate the id of DjangoJob
     name = models.CharField(max_length=64, unique=True)
-    job = models.OneToOneField(DjangoJob, null=True, on_delete=models.CASCADE)
+    job = models.OneToOneField(DjangoJob, null=True, on_delete=models.CASCADE, related_name='task')
     # will be processed by shlex.split(script_args) before passing to subprocess.Popen
     script = models.ForeignKey('Script', on_delete=models.DO_NOTHING)
     script_args = models.TextField(null=True, blank=True)

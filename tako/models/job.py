@@ -1,6 +1,8 @@
 import logging
+import pickle
 from datetime import datetime, timedelta
 
+from apscheduler.job import Job as AppSchedulerJob
 from django.db import models, transaction
 from django.db.models import UniqueConstraint
 from django.utils import timezone
@@ -40,6 +42,12 @@ class DjangoJob(models.Model):
     class Meta:
         ordering = ("next_run_time",)
         db_table = 'tako_job'
+
+    def aps_job(self) -> AppSchedulerJob:
+        job_state = pickle.loads(self.job_state)
+        job = AppSchedulerJob.__new__(AppSchedulerJob)
+        job.__setstate__(job_state)
+        return job
 
 
 class DjangoJobExecutionManager(models.Manager):
