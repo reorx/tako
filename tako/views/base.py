@@ -76,7 +76,7 @@ class APIView(View):
 def get_executions_params(request):
     params = {}
 
-    job_id = get_param(request, 'job_id', int)
+    job_id = get_param(request, 'job_id')
     if job_id is not None:
         params['job_id'] = job_id
 

@@ -1,6 +1,17 @@
-// execute task
 (function() {
-  var executeBtns = document.getElementsByClassName('btn-execute');
+  // filter job
+  const filterBtns = document.querySelectorAll('.btn-filter-job');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const el = e.currentTarget;
+      const params = new URLSearchParams(window.location.search);
+      params.set('job_id', el.dataset.jobId)
+      TAKO.setSearchParams(params);
+    })
+  });
+
+  // execute job
+  var executeBtns = document.getElementsByClassName('btn-execute-job');
   [].slice.call(executeBtns).forEach(function(x) {
     x.addEventListener('mouseup', function(e) {
       var dom = e.currentTarget;
@@ -24,12 +35,10 @@
       })
     })
   })
-})();
 
-// cancel job
-(function() {
-  var executeBtns = document.getElementsByClassName('btn-cancel-job');
-  [].slice.call(executeBtns).forEach(function(x) {
+  // cancel job
+  var cancelBtns = document.getElementsByClassName('btn-cancel-job');
+  [].slice.call(cancelBtns).forEach(function(x) {
     x.addEventListener('mouseup', function(e) {
       var dom = e.currentTarget;
       var id = Number(dom.dataset.jobId);

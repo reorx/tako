@@ -2,21 +2,6 @@
 {% load tako_filters %}
 
 {% block head %}
-<style>
-  table {
-    font-size: 15px;
-  }
-  td > code {
-    color: #333;
-    background: inherit;
-  }
-  td {
-    line-height: 1.1em;
-  }
-  td a {
-    display: inline-block;
-  }
-</style>
 {% endblock %}
 
 {% block main %}
@@ -56,6 +41,7 @@
   <script src="/static/d3.min.js"></script>
   <script src="/static/event-drops@1.2.0.min.js"></script>
   <script src="/static/event-drops-utils.js"></script>
+  <script src="/static/execution_table.js"></script>
   <script>
     (function() {
       var chart_el = document.getElementById('event-drops-chart');
@@ -70,7 +56,5 @@
         chart_el.removeAttribute('style');
       });
     })();
-
   </script>
-  <script src="/static/execution_table.js"></script>
 {% endblock %}

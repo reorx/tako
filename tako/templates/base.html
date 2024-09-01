@@ -11,6 +11,14 @@
   <link rel="stylesheet" href="{% static "spectre.min.css" %}">
   <link rel="stylesheet" href="{% static "spectre.icons.min.css" %}">
   <link rel="stylesheet" href="/static/base.css">
+  <script>
+    const TAKO = {
+      setSearchParams: function(params) {
+        const paramsStr = params.toString()
+        window.location = window.location.pathname + (paramsStr ? '?' + paramsStr : '')
+      }
+    }
+  </script>
   {% block head %}
   {% endblock %}
 </head>

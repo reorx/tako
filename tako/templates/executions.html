@@ -2,43 +2,35 @@
 {% load tako_filters %}
 
 {% block head %}
-<style>
-  table {
-    font-size: 15px;
-  }
-  td > pre {
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    font-family: Monaco, Consolas, Courier, monospace;
-    font-size: .9em;
-    margin: 0;
-  }
-  section.container {
-    margin-bottom: .8em;
-  }
-</style>
 {% endblock %}
 
 {% block main %}
   <h1>Executions</h1>
 
   <section class="container">
-      <div class="" style="border-right: 2px solid #eee">
-        <div>Arguments: <code>{{ params }}</code></div>
+      <div id="event-drops-chart" class="event-drops-container">
+        <div class="loading loading-lg" style="position: relative; top: 10px;"></div>
       </div>
 
-      <div class="">
-        <div id="event-drops-chart" class="event-drops-container">
-          <div class="loading loading-lg" style="position: relative; top: 10px;"></div>
+      <div class="filters-group">
+        <div>
+          <label>Status:</label>
+          <div class="btn-group filter-status">
+          {% for status in DjangoJobExecution.STATUSES %}
+            <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
+          {% endfor %}
+          </div>
         </div>
-      </div>
 
-      <div>
-        <div class="btn-group filter-status">
-        {% for status in DjangoJobExecution.STATUSES %}
-          <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
-        {% endfor %}
+        {% if params.job_id is not None %}
+        <div>
+          <label>Job:</label>
+          <span class="chip">
+            {{ params.job_id }}
+            <button class="btn btn-clear btn-clear-job-filter" aria-label="Close" role="button"></button>
+          </span>
         </div>
+        {% endif %}
       </div>
   </section>
 
@@ -90,6 +82,7 @@
   <script src="/static/d3.min.js"></script>
   <script src="/static/event-drops@1.2.0.min.js"></script>
   <script src="/static/event-drops-utils.js"></script>
+  <script src="/static/execution_table.js"></script>
   <script>
     (function() {
       // pjax
@@ -100,7 +93,6 @@
       });
 
       // status filter
-      const executionsUrl = '{% url "executions" %}';
       document.querySelector('.filter-status').addEventListener('click', function(e) {
         if (e.target.tagName === 'BUTTON') {
           const status = e.target.textContent;
@@ -113,10 +105,19 @@
           } else {
             params.append('status', status)
           }
-          const paramsStr = params.toString()
-          window.location = executionsUrl + (paramsStr ? '?' + paramsStr : '')
+          TAKO.setSearchParams(params)
         }
       });
+
+      // job filter
+      const clearJobFilterBtn = document.querySelector('.btn-clear-job-filter')
+      if (clearJobFilterBtn) {
+        clearJobFilterBtn.addEventListener('click', function(e) {
+          const params = new URLSearchParams(window.location.search);
+          params.delete('job_id')
+          TAKO.setSearchParams(params)
+        });
+      }
 
       // event drops
       var chart_el = document.getElementById('event-drops-chart');

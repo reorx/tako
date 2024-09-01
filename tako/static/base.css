@@ -8,6 +8,30 @@ h2 {
 .table td, .table th {
   padding: .5em .4em;
 }
+table {
+  font-size: 15px;
+}
+td > code {
+  color: #333;
+  background: inherit;
+}
+td {
+  line-height: 1.1em;
+}
+td a {
+  display: inline-block;
+}
+td > pre {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-family: Monaco, Consolas, Courier, monospace;
+  font-size: .9em;
+  margin: 0;
+}
+
+section.container {
+  margin-bottom: .8em;
+}
 
 .label.label-success {
   background: #ade0bc;
@@ -61,6 +85,24 @@ h2 > .sublink {
   text-decoration: underline;
 }
 
+/* filter */
+.filters-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.filters-group > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filters-group label {
+  color: #777;
+}
+
+
+/* event drop */
+
 .drop {
   cursor: pointer;
 }
@@ -81,26 +123,10 @@ h2 > .sublink {
   margin-right: .5em;
 }
 
-/*
-.ed-tooltip::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: -.5em;
-    left: 1.2em;
-    width: 1em;
-    height: 1em;
-    background: #fff;
-    border: 1px solid #aaa;
-    border-width: 1px 0 0 1px;
-    transform: rotate(45deg);
-    z-index: 1;
-}
-*/
-
-/* event drop styles */
 .event-drops-container {
   display: flex;
+  margin-bottom: 16px;
+  min-height: 128px;
 }
 
 .y-tick {

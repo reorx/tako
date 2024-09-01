@@ -39,14 +39,29 @@
       <td><span class="number-font">{{ exec.job.next_run_time|iso_time }}</span></td>
       {% if request.user.is_authenticated and request.user.is_superuser %}
       <td>
-        <button class="btn btn-sm btn-execute" title="execute task now" data-task-id="{{exec.task.id}}">
-          <i class="icon icon-refresh"></i>
-        </button>
-        {% if exec.task_trigger.create_type == 'instant_task' %}
-          <button class="btn btn-sm btn-cancel-job" data-job-id="{{exec.id}}">
-            <i class="icon icon-minus"></i>
+        <div style="display: flex; gap: 8px;">
+          <button
+            class="btn btn-sm tooltip tooltip-left btn-filter-job"
+            data-tooltip="Filter executions by this job"
+            data-job-id="{{exec.job.id}}"
+          >
+            <i class="icon icon-flag"></i>
           </button>
-        {% endif %}
+
+          <button
+            class="btn btn-sm tooltip tooltip-left btn-execute-job"
+            data-tooltip="Execute job now"
+            data-job-id="{{exec.job.id}}"
+          >
+            <i class="icon icon-refresh"></i>
+          </button>
+
+          {% if exec.task_trigger.create_type == 'instant_task' %}
+            <button class="btn btn-sm btn-cancel-job" data-job-id="{{exec.id}}">
+              <i class="icon icon-minus"></i>
+            </button>
+          {% endif %}
+        </div>
       </td>
       {% endif %}
       </td>
