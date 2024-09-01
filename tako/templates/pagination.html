@@ -1,0 +1,36 @@
+{% load tako_filters %}
+<div>
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a href="{{ base_url }}?{{ params|encode_params_with_page:page_obj.previous_page_number }}">Previous</a>
+      {% else %}
+    <li class="page-item disabled">
+      <a href="#" tabindex="-1">Previous</a>
+      {% endif %}
+    </li>
+
+    {% for i in page_range %}
+    {% if i == page_obj.number %}
+    <li class="page-item active">
+      {% else %}
+    <li class="page-item">
+      {% endif %}
+      {% if i == page_ellipsis %}
+      <span>...</span>
+      {% else %}
+      <a href="{{ base_url }}?{{ params|encode_params_with_page:i }}">{{ i }}</a>
+      {% endif %}
+    </li>
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a href="{{ base_url }}?{{ params|encode_params_with_page:page_obj.next_page_number }}">Next</a>
+      {% else %}
+    <li class="page-item disabled">
+      <a href="#" tabindex="-1">Next</a>
+      {% endif %}
+    </li>
+  </ul>
+</div>

@@ -5,128 +5,93 @@
 {% endblock %}
 
 {% block main %}
-  <h1>Executions</h1>
+<h1>Executions</h1>
 
-  <section class="container">
-      <div id="event-drops-chart" class="event-drops-container">
-        <div class="loading loading-lg" style="position: relative; top: 10px;"></div>
-      </div>
+<section class="container">
+  <div id="event-drops-chart" class="event-drops-container">
+    <div class="loading loading-lg" style="position: relative; top: 10px;"></div>
+  </div>
 
-      <div class="filters-group">
-        <div>
-          <label>Status:</label>
-          <div class="btn-group filter-status">
-          {% for status in DjangoJobExecution.STATUSES %}
-            <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
-          {% endfor %}
-          </div>
-        </div>
-
-        {% if params.job_id is not None %}
-        <div>
-          <label>Job:</label>
-          <span class="chip">
-            {{ params.job_id }}
-            <button class="btn btn-clear btn-clear-job-filter" aria-label="Close" role="button"></button>
-          </span>
-        </div>
-        {% endif %}
-      </div>
-  </section>
-
-  <section id="executions-main">
-    {% include "executions_table.html" with executions=object_list %}
-
+  <div class="filters-group">
     <div>
-      {% url 'executions' as executions_url %}
-      <ul class="pagination">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a href="{{ executions_url }}?{{ params|encode_params_with_page:page_obj.previous_page_number }}">Previous</a>
-      {% else %}
-        <li class="page-item disabled">
-          <a href="#" tabindex="-1">Previous</a>
-      {% endif %}
-        </li>
-
-      {% for i in page_range %}
-      {% if i == page_obj.number %}
-        <li class="page-item active">
-      {% else %}
-        <li class="page-item">
-      {% endif %}
-        {% if i == page_ellipsis %}
-          <span>...</span>
-        {% else %}
-          <a href="{{ executions_url }}?{{ params|encode_params_with_page:i }}">{{ i }}</a>
-        {% endif %}
-        </li>
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a href="{{ executions_url }}?{{ params|encode_params_with_page:page_obj.next_page_number }}">Next</a>
-      {% else %}
-        <li class="page-item disabled">
-          <a href="#" tabindex="-1">Next</a>
-      {% endif %}
-        </li>
-      </ul>
+      <label>Status:</label>
+      <div class="btn-group filter-status">
+        {% for status in DjangoJobExecution.STATUSES %}
+        <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
+        {% endfor %}
+      </div>
     </div>
 
-  </section>
+    {% if params.job_id is not None %}
+    <div>
+      <label>Job:</label>
+      <span class="chip">
+        {{ params.job_id }}
+        <button class="btn btn-clear btn-clear-job-filter" aria-label="Close" role="button"></button>
+      </span>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="pjax-container">
+  {% include "executions_table.html" with object_list=object_list %}
+
+  {% url 'executions' as base_url %}
+  {% include "pagination.html" with page_obj=page_obj page_range=page_range base_url=base_url %}
+</section>
 {% endblock %}
 
 {% block body_end %}
-  <script src="/static/pjax-standalone.min.js"></script>
-  <script src="/static/d3.min.js"></script>
-  <script src="/static/event-drops@1.2.0.min.js"></script>
-  <script src="/static/event-drops-utils.js"></script>
-  <script src="/static/execution_table.js"></script>
-  <script>
-    (function() {
-      // pjax
-      var pjax = new Pjax({
-        elements: '.pagination a',
-        selectors: ['#executions-main'],
-        // cacheBust: false,
-      });
+<script src="/static/pjax-standalone.min.js"></script>
+<script src="/static/d3.min.js"></script>
+<script src="/static/event-drops@1.2.0.min.js"></script>
+<script src="/static/event-drops-utils.js"></script>
+<script src="/static/execution_table.js"></script>
+<script>
+  (function () {
+    // pjax
+    var pjax = new Pjax({
+      elements: '.pagination a',
+      selectors: ['.pjax-container'],
+      // cacheBust: false,
+    });
 
-      // status filter
-      document.querySelector('.filter-status').addEventListener('click', function(e) {
-        if (e.target.tagName === 'BUTTON') {
-          const status = e.target.textContent;
-          const params = new URLSearchParams(window.location.search);
+    // status filter
+    document.querySelector('.filter-status').addEventListener('click', function (e) {
+      if (e.target.tagName === 'BUTTON') {
+        const status = e.target.textContent;
+        const params = new URLSearchParams(window.location.search);
 
-          // toggle status from params
-          const paramsStatus = params.getAll('status')
-          if (paramsStatus.includes(status)) {
-            params.delete('status', status)
-          } else {
-            params.append('status', status)
-          }
-          TAKO.setSearchParams(params)
+        // toggle status from params
+        const paramsStatus = params.getAll('status')
+        if (paramsStatus.includes(status)) {
+          params.delete('status', status)
+        } else {
+          params.append('status', status)
         }
-      });
-
-      // job filter
-      const clearJobFilterBtn = document.querySelector('.btn-clear-job-filter')
-      if (clearJobFilterBtn) {
-        clearJobFilterBtn.addEventListener('click', function(e) {
-          const params = new URLSearchParams(window.location.search);
-          params.delete('job_id')
-          TAKO.setSearchParams(params)
-        });
+        TAKO.setSearchParams(params)
       }
+    });
 
-      // event drops
-      var chart_el = document.getElementById('event-drops-chart');
-      TAKO.fetchExecutionsTsdata().then(data => {
-        document.querySelectorAll('.loading').forEach(function(e) {
-          e.remove();
-        });
-        TAKO.draw_event_drops(chart_el, data, {left: -60, right: 10, bottom: 0})
-      })
-    })();
-  </script>
+    // job filter
+    const clearJobFilterBtn = document.querySelector('.btn-clear-job-filter')
+    if (clearJobFilterBtn) {
+      clearJobFilterBtn.addEventListener('click', function (e) {
+        const params = new URLSearchParams(window.location.search);
+        params.delete('job_id')
+        TAKO.setSearchParams(params)
+      });
+    }
+
+    // event drops
+    var chart_el = document.getElementById('event-drops-chart');
+    TAKO.fetchExecutionsTsdata().then(data => {
+      document.querySelectorAll('.loading').forEach(function (e) {
+        e.remove();
+      });
+      TAKO.draw_event_drops(chart_el, data, { left: -60, right: 10, bottom: 0 })
+    })
+  })();
+</script>
 {% endblock %}

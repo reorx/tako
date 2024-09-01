@@ -14,7 +14,7 @@
   </thead>
 {% endif %}
   <tbody>
-  {% for exec in executions %}
+  {% for exec in object_list %}
     <tr>
       <td><a href="{% url 'executions_detail' exec.id %}" class="number-font">{{ exec.id }}</a></td>
       <td>
