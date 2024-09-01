@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load tako_filters %}
+
+{% block head %}
+{% endblock %}
+
+{% block main %}
+<h1>Jobs</h1>
+
+<section class="container">
+  <div class="filters-group">
+    <div>
+      <label>Associated with Task:</label>
+      <div class="form-group">
+        <label class="form-radio form-inline">
+          <input type="radio" name="gender" checked=""><i class="form-icon"></i> Yes
+        </label>
+        <label class="form-radio form-inline">
+          <input type="radio" name="gender"><i class="form-icon"></i> No
+        </label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pjax-container">
+  <table class="table">
+  {% if object_list %}
+    <thead>
+      <th style="width: 5em;">ID</th>
+      <th>Task</th>
+      <th>Trigger</th>
+      <th style="width: 15em;">Next run time</th>
+      {% if request.user.is_superuser %}
+        <th style="width: 5em;">Actions</th>
+      {% endif %}
+    </thead>
+  {% endif %}
+    <tbody>
+    {% for obj in object_list %}
+      {% with aps_job=obj.aps_job %}
+      <tr>
+        <td><a href="{% url 'jobs_detail' obj.id %}" class="number-font">{{ obj.id }}</a></td>
+        <td>
+          {% if obj.task %}
+            <a href="{% url 'tasks_detail' obj.task.id %}">
+              {{ obj.task.name }}
+            </a>
+          {% endif %}
+        </td>
+        <td>
+          <code>{{ aps_job.trigger }}</code>
+        </td>
+        <td><span class="number-font">{{ obj.next_run_time|iso_time }}</span></td>
+
+        {% if request.user.is_superuser %}
+        <td>
+          <div style="display: flex; gap: 8px;">
+            <button
+              class="btn btn-sm tooltip tooltip-left btn-execute-job"
+              data-tooltip="Execute job now"
+              data-job-id="{{obj.job.id}}"
+            >
+              <i class="icon icon-refresh"></i>
+            </button>
+          </div>
+        </td>
+        {% endif %}
+      </tr>
+      {% endwith %}
+
+      {% empty %}
+      <tr>No jobs yet.</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+
+{% block body_end %}
+{% endblock %}

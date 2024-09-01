@@ -81,6 +81,9 @@ class JobsView(ListView):
     def get_template_names(self):
         return 'jobs.html'
 
+    def get_queryset(self):
+        return DjangoJob.objects.select_related('task').all().order_by('-id')
+
 
 class TasksView(ListView):
     model = Task
