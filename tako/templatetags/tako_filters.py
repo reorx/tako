@@ -52,16 +52,23 @@ def tako_url(path):
 
 
 @register.filter
+def execution_url(id):
+    return url_(f'executions/{id}')
+
+
+@register.filter
 def job_url(id):
-    return url_(f'/jobs/{id}')
+    return url_(f'jobs/{id}')
+
 
 @register.filter
 def task_url(id):
-    return url_(f'/tasks/{id}')
+    return url_(f'tasks/{id}')
+
 
 @register.filter
 def executions_url(is_success):
-    return url_(f'/executions?is_success={is_success}')
+    return url_(f'executions?is_success={is_success}')
 
 
 @register.filter

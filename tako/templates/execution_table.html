@@ -16,7 +16,7 @@
   <tbody>
   {% for exec in executions %}
     <tr>
-      <td><a href="{{ exec.id|job_url }}" class="number-font">{{ exec.id }}</a></td>
+      <td><a href="{{ exec.id|execution_url }}" class="number-font">{{ exec.id }}</a></td>
       <td>
         {% with aps_job=exec.job.aps_job %}
         <code>{{ aps_job.name }} | {{ aps_job.trigger }} </code>

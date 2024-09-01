@@ -2,17 +2,9 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
-# TODO import new run task function
-# from .admin import run_task
 from ..models.job import DjangoJobExecution
 from ..templatetags.tako_filters import url_
-from .base import ParamsMixin, executions_queryset, filter_execution_by_success
-
-
-# TODO import models
-# from .models import ManagerJob, ManagerJobExecution, ManagerTask, standard_status
-# TODO import job_store
-# from .myjobs import job_store
+from .base import ParamsMixin, executions_queryset, filter_execution_by_success, get_page_range
 
 
 def index(req):
@@ -41,7 +33,7 @@ class DashboardView(ParamsMixin, TemplateView):
 
 
 class ExecutionsView(ParamsMixin, ListView):
-    # model = ManagerJobExecution
+    model = DjangoJobExecution
     paginate_by = 25
 
     # custom attrs
@@ -60,7 +52,7 @@ class ExecutionsView(ParamsMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['qs_args'] = self.qs_args
         page_obj = context['page_obj']
-        context['page_range'] = page_range(
+        context['page_range'] = get_page_range(
             page_obj.paginator.page_range,
             page_obj.paginator.num_pages,
             self.page_num_limit,

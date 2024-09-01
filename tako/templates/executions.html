@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load tako_filters %}
+
+{% block head %}
+<style>
+  table {
+    font-size: 15px;
+  }
+  td > pre {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-family: Monaco, Consolas, Courier, monospace;
+    font-size: .9em;
+    margin: 0;
+  }
+  section.container {
+    margin-bottom: .8em;
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+  <h1>Executions</h1>
+
+  <section class="container">
+    <div class="columns">
+      <div class="column col-3" style="border-right: 2px solid #eee">
+        <div>Arguments:</div>
+        <ul>
+          {% for k, v in qs_args %}
+            {% if v is not None %}
+              <li>{{ k }}: <code>{{ v }}</code></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="column col-9">
+        <div id="event-drops-chart" class="event-drops-container">
+          <div class="loading loading-lg" style="position: relative; top: 10px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="executions-main">
+    <div>
+      <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a href="/executions?{{ qs_args|url_query_with_page:page_obj.previous_page_number }}">Previous</a>
+      {% else %}
+        <li class="page-item disabled">
+          <a href="#" tabindex="-1">Previous</a>
+      {% endif %}
+        </li>
+
+      {% for i in page_range %}
+      {% if i == page_obj.number %}
+        <li class="page-item active">
+      {% else %}
+        <li class="page-item">
+      {% endif %}
+        {% if i == page_ellipsis %}
+          <span>...</span>
+        {% else %}
+          <a href="{{ "executions"|tako_url }}?{{ qs_args|url_query_with_page:i }}">{{ i }}</a>
+        {% endif %}
+        </li>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a href="/executions?{{ qs_args|url_query_with_page:page_obj.next_page_number }}">Next</a>
+      {% else %}
+        <li class="page-item disabled">
+          <a href="#" tabindex="-1">Next</a>
+      {% endif %}
+        </li>
+      </ul>
+    </div>
+
+    {% include "execution_table.html" with executions=object_list %}
+  </section>
+{% endblock %}
+
+{% block body_end %}
+  <script src="/static/pjax-standalone.min.js"></script>
+  <script src="/static/d3.min.js"></script>
+  <script src="/static/event-drops@1.2.0.min.js"></script>
+  <script src="/static/event-drops-utils.js"></script>
+  <script>
+    (function() {
+      // pjax
+      var pjax = new Pjax({
+        elements: '.pagination a',
+        selectors: ['#executions-main'],
+        // cacheBust: false,
+      });
+
+      // event drops
+      var chart_el = document.getElementById('event-drops-chart');
+      fetch('{{ "api/executions-tsdata"|tako_url }}' + window.location.search)
+        .then(function(resp) {
+          return resp.json();
+        }).then(function(data) {
+          document.querySelectorAll('.loading').forEach(function(e) {
+            e.remove();
+          });
+          draw_event_drops(chart_el, data, {left: -60, right: 10, bottom: 0})
+        });
+    })();
+  </script>
+{% endblock %}

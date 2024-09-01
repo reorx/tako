@@ -74,7 +74,6 @@ class APIView(ParamsMixin, View):
         )
 
 
-
 def filter_execution_by_success(qs, is_success):
     if is_success:
         qs = qs.filter(status=DjangoJobExecution.SUCCESS)
@@ -102,3 +101,27 @@ def executions_queryset(self, qs):
         qs = filter_execution_by_success(qs, status == DjangoJobExecution.SUCCESS)
 
     return qs
+
+
+def get_page_range(origin_range, num_pages, limit, surround, number, ellipsis='...'):
+    if num_pages > limit:
+        left = []
+        right = []
+        surrounded = list(range(max(number - surround, 1), min(number + surround + 1, num_pages)))
+        if surrounded[0] <= 1 + surround + 1:
+            left = list(range(1, surrounded[0]))
+            right = list(range(num_pages - surround, num_pages + 1))
+            right.insert(0, ellipsis)
+        elif surrounded[0] > 1 + surround + 1 and surrounded[-1] < num_pages - surround - 1:
+            left = list(range(1, 1 + surround + 1))
+            left.append(ellipsis)
+            right = list(range(num_pages - surround, num_pages + 1))
+            right.insert(0, ellipsis)
+        else:
+            left = list(range(1, surround + 1))
+            left.append(ellipsis)
+            right = list(range(surrounded[-1] + 1, num_pages + 1))
+
+        return left + surrounded + right
+    else:
+        return origin_range

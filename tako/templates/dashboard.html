@@ -19,13 +19,12 @@
 </style>
 {% endblock %}
 
-
 {% block main %}
   <h1>Dashboard</h1>
   <p>Now: <span class="number-font">{{ now|iso_time }}</span></p>
 
   <section>
-    <div id="event-drops-chart" style="height: 170px;">
+    <div id="event-drops-chart" class="event-drops-container" style="height: 170px;">
       <div class="loading loading-lg" style="position: relative; top: 40px;"></div>
     </div>
   </section>
@@ -65,7 +64,7 @@
         document.querySelectorAll('.loading').forEach(function(e) {
           e.remove();
         });
-        draw_event_drops(chart_el, data, {left: -60, right: 15, bottom: 0});
+        draw_event_drops(chart_el, data, {left: -60, right: 10, bottom: 0});
         chart_el.removeAttribute('style');
       });
     })();
