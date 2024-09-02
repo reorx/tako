@@ -46,8 +46,8 @@
         <td>
           {{ obj.trigger_value }}
         </td>
-        <td><span class="number-font">{{ obj.created_at|iso_time }}</span></td>
-        <td><span class="number-font">{{ obj.updated_at|iso_time }}</span></td>
+        <td><span class="code-font">{{ obj.created_at|iso_time }}</span></td>
+        <td><span class="code-font">{{ obj.updated_at|iso_time }}</span></td>
 
         {% if request.user.is_superuser %}
         <td>

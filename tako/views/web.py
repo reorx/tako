@@ -124,6 +124,10 @@ class ExecutionsDetailView(DetailView):
 
 
 class JobsDetailView(DetailView):
+    model = DjangoJob
+
+    slug_field = 'id'
+
     def get_template_names(self):
         return 'jobs_detail.html'
 

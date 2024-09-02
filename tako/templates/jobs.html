@@ -34,7 +34,7 @@
     {% for obj in object_list %}
       {% set aps_job = obj.aps_job() %}
       <tr>
-        <td><a href="{{ url('jobs_detail', obj.id) }}" class="number-font">{{ obj.id }}</a></td>
+        <td><a href="{{ url('jobs_detail', obj.id) }}" class="code-font">{{ obj.id }}</a></td>
         <td>
           {% if obj.task %}
             <a href="{{ url('tasks_detail', obj.task.id) }}">
@@ -45,7 +45,7 @@
         <td>
           <code>{{ aps_job.trigger }}</code>
         </td>
-        <td><span class="number-font">{{ obj.next_run_time|iso_time }}</span></td>
+        <td><span class="code-font">{{ obj.next_run_time|iso_time }}</span></td>
 
         <td>
           <div style="display: flex; gap: 16px;">

@@ -1,0 +1,18 @@
+{% macro tr_kv(key, value, type='') -%}
+<tr>
+  <td>{{ key }}</td>
+  <td>
+  {% if type == 'codeblock' %}
+    {% if value %}
+      <pre class="code-font"><code>{{ value }}</code></pre>
+    {% else %}
+      -
+    {% endif %}
+  {% elif type == 'code' %}
+    <span class="code-font">{{ value }}</span>
+  {% else %}
+    {{ value }}
+  {% endif %}
+  </td>
+</tr>
+{%- endmacro %}

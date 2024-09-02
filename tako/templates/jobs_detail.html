@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+  td > pre {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-family: Monaco, Consolas, Courier, monospace;
+    font-size: .9em;
+    margin: 0;
+  }
+</style>
+{% endblock %}
+
+{% import "_detail_macros.html" as macros %}
+{% block main %}
+  <h1>Job Detail</h1>
+
+  <section>
+    <h2>Info</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 8em;">Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% set aps_job = object.aps_job() %}
+      {{ macros.tr_kv('ID', object.id, type='code') }}
+      {{ macros.tr_kv('Trigger', aps_job.trigger, type='code') }}
+      {{ macros.tr_kv('Next run time', aps_job.next_run_time) }}
+      <tr>
+        <td>Task</td>
+        <td>
+          {% if object.task %}
+            <a href="{{ url('tasks_detail', object.task.id) }}">{{ object.task.name }}</a>
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {{ macros.tr_kv('function', aps_job.func, type='codeblock') }}
+      {{ macros.tr_kv('args', aps_job.args, type='codeblock') }}
+      {{ macros.tr_kv('kwargs', aps_job.kwargs, type='codeblock') }}
+      {{ macros.tr_kv('Executor', aps_job.executor, type='code') }}
+      {{ macros.tr_kv('Coalesce', aps_job.coalesce, type='code') }}
+      {{ macros.tr_kv('Misfire grace time', aps_job.misfire_grace_time, type='code') }}
+      {{ macros.tr_kv('Max instances', aps_job.max_instances, type='code') }}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}
+
+{% block body_end %}
+{% endblock %}

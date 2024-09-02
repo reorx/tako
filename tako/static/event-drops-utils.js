@@ -44,9 +44,9 @@ TAKO.draw_event_drops = function(el, data, margin) {
           .html(`
             <div>
               <span class="label ${data.status_class}">${data.status}</span>
-              <span class="number-font text-underline">${data.id}</span>
-              <span class="number-font">${data.date}</span>
-              <span class="number-font">${data.duration}</span>
+              <span class="code-font text-underline">${data.id}</span>
+              <span class="code-font">${data.date}</span>
+              <span class="code-font">${data.duration}</span>
             </div>
             <div>${data.job_id}</div>
           `)

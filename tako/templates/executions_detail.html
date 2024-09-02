@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load tako_filters %}
 
 {% block head %}
 <style>
@@ -13,6 +12,7 @@
 </style>
 {% endblock %}
 
+{% import "_detail_macros.html" as macros %}
 {% block main %}
   <h1>Execution Detail</h1>
 
@@ -20,16 +20,13 @@
     <h2>Info</h2>
     <table class="table">
       <thead>
-      <tr>
-        <th style="width: 8em;">Key</th>
-        <th>Value</th>
-      </tr>
+        <tr>
+          <th style="width: 8em;">Key</th>
+          <th>Value</th>
+        </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>ID</td>
-        <td class="number-font">{{ object.id }}</td>
-      </tr>
+      {{ macros.tr_kv('ID', object.id, type='code') }}
       <tr>
         <td>Status</td>
         <td>
@@ -41,7 +38,7 @@
       <tr>
         <td>Job</td>
         <td>
-          <a href="{% url 'jobs_detail' object.job_id %}" title="trigger executions">{{ object.job_id}}</a>
+          <a href="{{ url('jobs_detail', object.job_id) }}" title="trigger executions">{{ object.job_id}}</a>
           <button
             class="btn btn-sm btn-execute-job"
             title="Click to execute this job's task"
@@ -52,28 +49,10 @@
           </button>
         </td>
       </tr>
-      <tr>
-        <td>Run time</td>
-        <td class="number-font">{{ object.run_time|iso_time }}</td>
-      </tr>
-      <tr>
-        <td>Duration</td>
-        <td class="number-font">{{ object.duration|duration }}</td>
-      </tr>
-      <tr>
-        <td>Return code</td>
-        <td class="number-font">{{ object.returncode }}</td>
-      </tr>
-      <tr>
-        <td>Env</td>
-        <td>
-          {% if object.env %}
-            <pre><code>{{ object.env }}</code></pre>
-          {% else %}
-            -
-          {% endif %}
-        </td>
-      </tr>
+      {{ macros.tr_kv('Run time', iso_time(object.run_time)) }}
+      {{ macros.tr_kv('Duration', duration(object.duration), type='code') }}
+      {{ macros.tr_kv('Return code', object.returncode, type='code') }}
+      {{ macros.tr_kv('Env', object.env, type='codeblock') }}
       </tbody>
     </table>
   </section>

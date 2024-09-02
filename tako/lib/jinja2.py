@@ -55,6 +55,7 @@ def get_spectre_label_class(status):
 
 
 @register_filter
+@register_context
 def duration(v):
     if v is not None:
         return f'{v}s'
@@ -65,6 +66,7 @@ iso_time_format = '%Y-%m-%d %H:%M:%S%z'
 
 
 @register_filter
+@register_context
 def iso_time(t):
     if not t:
         return '-'

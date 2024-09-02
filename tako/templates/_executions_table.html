@@ -13,7 +13,7 @@
   <tbody>
   {% for obj in object_list %}
     <tr>
-      <td><a href="{{ url('executions_detail', obj.id) }}" class="number-font">{{ obj.id }}</a></td>
+      <td><a href="{{ url('executions_detail', obj.id) }}" class="code-font">{{ obj.id }}</a></td>
       <td>
         {% set aps_job = obj.job.aps_job() %}
         <code>{{ aps_job.name }} | {{ aps_job.trigger }} </code>
@@ -28,11 +28,11 @@
         {% endif %}
       </td>
       <td><span class="label {{ obj.status|spectre_label_class }}">{{ obj.status }}</span></td>
-      <td><span class="number-font">{{ obj.duration|duration }}</span></td>
+      <td><span class="code-font">{{ obj.duration|duration }}</span></td>
       <td>
-        <span class="number-font">{{ obj.run_time|iso_time }}</span>
+        <span class="code-font">{{ obj.run_time|iso_time }}</span>
       </td>
-      <td><span class="number-font">{{ obj.job.next_run_time|iso_time }}</span></td>
+      <td><span class="code-font">{{ obj.job.next_run_time|iso_time }}</span></td>
       <td>
         <div style="display: flex; gap: 16px;">
           <button
