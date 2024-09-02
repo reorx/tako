@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load tako_filters %}
+{% load static %}
 
 {% block head %}
 {% endblock %}
@@ -13,15 +14,6 @@
   </div>
 
   <div class="filters-group">
-    <div>
-      <label>Status:</label>
-      <div class="btn-group filter-status">
-        {% for status in DjangoJobExecution.STATUSES %}
-        <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
-        {% endfor %}
-      </div>
-    </div>
-
     {% if params.job_id is not None %}
     <div>
       <label>Job:</label>
@@ -31,23 +23,30 @@
       </span>
     </div>
     {% endif %}
+
+    <div>
+      <label>Status:</label>
+      <div class="btn-group status-filter">
+        {% for status in DjangoJobExecution.STATUSES %}
+        <button class="btn btn-sm {% if status in params_statuses %}active{% endif %}">{{ status }}</button>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 </section>
 
 <section class="pjax-container">
-  {% include "executions_table.html" with object_list=object_list %}
+  {% include "_executions_table.html" with object_list=object_list %}
 
   {% url 'executions' as base_url %}
-  {% include "pagination.html" with page_obj=page_obj page_range=page_range base_url=base_url %}
+  {% include "_pagination.html" with page_obj=page_obj page_range=page_range base_url=base_url %}
 </section>
 {% endblock %}
 
 {% block body_end %}
-<script src="/static/pjax-standalone.min.js"></script>
-<script src="/static/d3.min.js"></script>
-<script src="/static/event-drops@1.2.0.min.js"></script>
-<script src="/static/event-drops-utils.js"></script>
-<script src="/static/execution_table.js"></script>
+<script src="{% static "lib/pjax-standalone.min.js" %}"></script>
+
+{% include "_event_drops.html" %}
 <script>
   (function () {
     // pjax
@@ -58,9 +57,8 @@
     });
 
     // status filter
-    document.querySelector('.filter-status').addEventListener('click', function (e) {
-      if (e.target.tagName === 'BUTTON') {
-        const status = e.target.textContent;
+    delegate('.btn', 'click', (e) => {
+        const status = e.delegateTarget.textContent;
         const params = new URLSearchParams(window.location.search);
 
         // toggle status from params
@@ -71,26 +69,18 @@
           params.append('status', status)
         }
         TAKO.setSearchParams(params)
-      }
-    });
 
-    // job filter
-    const clearJobFilterBtn = document.querySelector('.btn-clear-job-filter')
-    if (clearJobFilterBtn) {
-      clearJobFilterBtn.addEventListener('click', function (e) {
-        const params = new URLSearchParams(window.location.search);
-        params.delete('job_id')
-        TAKO.setSearchParams(params)
-      });
-    }
+    }, {
+      base: document.querySelector('.status-filter')
+    })
 
-    // event drops
-    var chart_el = document.getElementById('event-drops-chart');
-    TAKO.fetchExecutionsTsdata().then(data => {
-      document.querySelectorAll('.loading').forEach(function (e) {
-        e.remove();
-      });
-      TAKO.draw_event_drops(chart_el, data, { left: -60, right: 10, bottom: 0 })
+    // clear job filter
+    delegate('.btn-clear-job-filter', 'click', (e) => {
+      const params = new URLSearchParams(window.location.search);
+      params.delete('job_id')
+      TAKO.setSearchParams(params)
+    }, {
+      base: document.querySelector('.filters-group')
     })
   })();
 </script>

@@ -8,21 +8,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title></title>
   {% load static %}
-  <link rel="stylesheet" href="{% static "spectre.min.css" %}">
-  <link rel="stylesheet" href="{% static "spectre.icons.min.css" %}">
-  <link rel="stylesheet" href="/static/base.css">
-  <script>
-    const TAKO = {
-      urls: {
-        executions: "{% url 'executions' %}",
-        executionsTsdata: "{% url 'api_executions_tsdata' %}",
-      },
-      setSearchParams: function(params) {
-        const paramsStr = params.toString()
-        window.location = window.location.pathname + (paramsStr ? '?' + paramsStr : '')
-      },
-    }
-  </script>
+  <link rel="stylesheet" href="{% static "lib/spectre.min.css" %}">
+  <link rel="stylesheet" href="{% static "lib/spectre.icons.min.css" %}">
+  <link rel="stylesheet" href="{% static "base.css" %}">
   {% block head %}
   {% endblock %}
 </head>
@@ -38,6 +26,21 @@
   {% block main %}
   {% endblock %}
   </div>
+
+  <script src="{% static "lib/delegate-it@6.2.0.js" %}"></script>
+  <script>
+    const TAKO = {
+      urls: {
+        executions: "{% url 'executions' %}",
+        executionsTsdata: "{% url 'api_executions_tsdata' %}",
+      },
+      setSearchParams: function(params) {
+        const paramsStr = params.toString()
+        window.location = window.location.pathname + (paramsStr ? '?' + paramsStr : '')
+      },
+    }
+  </script>
+  <script src="{% static "button-events.js" %}"></script>
   {% block body_end %}
   {% endblock %}
 </body>

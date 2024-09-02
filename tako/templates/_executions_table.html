@@ -42,6 +42,7 @@
         <div style="display: flex; gap: 8px;">
           <button
             class="btn btn-sm tooltip tooltip-left btn-filter-job"
+            {% if nav_executions %}data-nav-executions="true"{% endif %}
             data-tooltip="Filter executions by this job"
             data-job-id="{{obj.job.id}}"
           >

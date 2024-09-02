@@ -39,7 +39,7 @@ class DashboardView(TemplateView):
 
 class ExecutionsView(ListView):
     model = DjangoJobExecution
-    paginate_by = 25
+    paginate_by = 15
 
     # custom attrs
     page_ellipsis = '...'
