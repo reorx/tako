@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% import "_detail_macros.html" as macros %}
+{% block main %}
+  <h1>Task Detail</h1>
+
+  <section>
+    <h2>Info</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 10em;">Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{ macros.tr_kv('ID', object.id, type='code') }}
+      {{ macros.tr_kv('Name', object.name) }}
+      <tr>
+        <td>Script</td>
+        <td>
+          <a href="{{ url('scripts_detail', object.script.id) }}">{{ object.script.filename }}</a>
+        </td>
+      </tr>
+      {{ macros.tr_kv('Script Args', object.script_args, type='codeblock') }}
+      {{ macros.tr_kv('Trigger Type', object.trigger_type, type='code') }}
+      {{ macros.tr_kv('Trigger Args', object.trigger_value, type='codeblock') }}
+      {{ macros.tr_kv('Created At', object.created_at, type='time') }}
+      {{ macros.tr_kv('Updated At', object.updated_at, type='time') }}
+      <tr>
+        <td>Job</td>
+        <td>
+          <a href="{{ url('jobs_detail', object.job.id) }}">{{ object.job.id }}</a>
+        </td>
+      </tr>
+      {{ macros.tr_kv('Job Next Run Time', object.job.next_run_time, type='time_relative') }}
+
+      </tbody>
+    </table>
+
+    <div class="detail-actions">
+      <button
+        class="btn btn-sm btn-primary btn-execute-job"
+        data-task-id="{{object.id}}"
+      >
+        Run Job
+      </button>
+    </div>
+  </section>
+{% endblock %}
+
+{% block body_end %}
+{% endblock %}

@@ -1,15 +1,6 @@
 {% extends "base.html" %}
 
 {% block head %}
-<style>
-  td > pre {
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    font-family: Monaco, Consolas, Courier, monospace;
-    font-size: .9em;
-    margin: 0;
-  }
-</style>
 {% endblock %}
 
 {% import "_detail_macros.html" as macros %}
@@ -21,7 +12,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th style="width: 8em;">Key</th>
+          <th style="width: 10em;">Key</th>
           <th>Value</th>
         </tr>
       </thead>
@@ -29,7 +20,7 @@
       {% set aps_job = object.aps_job() %}
       {{ macros.tr_kv('ID', object.id, type='code') }}
       {{ macros.tr_kv('Trigger', aps_job.trigger, type='code') }}
-      {{ macros.tr_kv('Next run time', aps_job.next_run_time) }}
+      {{ macros.tr_kv('Next run time', aps_job.next_run_time, type='time_relative') }}
       <tr>
         <td>Task</td>
         <td>
@@ -49,6 +40,15 @@
       {{ macros.tr_kv('Max instances', aps_job.max_instances, type='code') }}
       </tbody>
     </table>
+
+    <div class="detail-actions">
+      <button
+        class="btn btn-sm btn-primary btn-execute-job"
+        data-task-id="{{object.id}}"
+      >
+        Run Job
+      </button>
+    </div>
   </section>
 {% endblock %}
 

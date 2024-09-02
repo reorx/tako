@@ -10,6 +10,10 @@
     {% endif %}
   {% elif type == 'code' %}
     <span class="code-font">{{ value }}</span>
+  {% elif type == 'time' %}
+    {{ value|iso_time }}
+  {% elif type == 'time_relative' %}
+    {{ value|iso_time }} (<b>{{ relative_to_now(value) }}</b>)
   {% else %}
     {{ value }}
   {% endif %}

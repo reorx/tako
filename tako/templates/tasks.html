@@ -44,10 +44,10 @@
           {{ obj.trigger_type }}
         </td>
         <td>
-          {{ obj.trigger_value }}
+          <pre><code>{{ obj.trigger_value }}</code></pre>
         </td>
-        <td><span class="code-font">{{ obj.created_at|iso_time }}</span></td>
-        <td><span class="code-font">{{ obj.updated_at|iso_time }}</span></td>
+        <td>{{ obj.created_at|iso_time }}</td>
+        <td>{{ obj.updated_at|iso_time }}</td>
 
         {% if request.user.is_superuser %}
         <td>
@@ -55,7 +55,7 @@
             <button
               class="btn btn-sm tooltip tooltip-left btn-filter-job"
               data-nav-executions="true"
-              data-tooltip="Filter executions by this job"
+              data-tooltip="Filter executions by this task's job"
               data-job-id="{{obj.job.id}}"
             >
               <i class="icon icon-flag"></i>

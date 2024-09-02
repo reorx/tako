@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 
+import arrow
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.timezone import localtime
@@ -71,6 +72,11 @@ def iso_time(t):
     if not t:
         return '-'
     return localtime(t).strftime(iso_time_format)
+
+
+@register_context
+def relative_to_now(t):
+    return arrow.get(t).humanize()
 
 
 @register_context

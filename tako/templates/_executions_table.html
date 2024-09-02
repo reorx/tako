@@ -3,11 +3,10 @@
   <thead>
     <th style="width: 5em;">ID</th>
     <th>Job / Task</th>
-    <th style="width: 6em;">Status</th>
-    <th style="width: 5em;">Duration</th>
-    <th style="width: 15em;">Run time</th>
-    <th style="width: 15em;">Next run time</th>
-    <th style="width: 5em;">Actions</th>
+    <th style="width: 7em;">Status</th>
+    <th style="width: 6em;">Duration</th>
+    <th style="width: 16em;">Run time</th>
+    <th style="width: 7em;">Actions</th>
   </thead>
 {% endif %}
   <tbody>
@@ -30,9 +29,8 @@
       <td><span class="label {{ obj.status|spectre_label_class }}">{{ obj.status }}</span></td>
       <td><span class="code-font">{{ obj.duration|duration }}</span></td>
       <td>
-        <span class="code-font">{{ obj.run_time|iso_time }}</span>
+        {{ obj.run_time|iso_time }}
       </td>
-      <td><span class="code-font">{{ obj.job.next_run_time|iso_time }}</span></td>
       <td>
         <div style="display: flex; gap: 16px;">
           <button

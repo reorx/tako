@@ -2,3 +2,4 @@ apscheduler
 django-environ
 pydantic
 jinja2
+arrow

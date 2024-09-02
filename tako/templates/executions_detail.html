@@ -1,15 +1,6 @@
 {% extends "base.html" %}
 
 {% block head %}
-<style>
-  td > pre {
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    font-family: Monaco, Consolas, Courier, monospace;
-    font-size: .9em;
-    margin: 0;
-  }
-</style>
 {% endblock %}
 
 {% import "_detail_macros.html" as macros %}
@@ -21,7 +12,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th style="width: 8em;">Key</th>
+          <th style="width: 10em;">Key</th>
           <th>Value</th>
         </tr>
       </thead>
@@ -38,15 +29,7 @@
       <tr>
         <td>Job</td>
         <td>
-          <a href="{{ url('jobs_detail', object.job_id) }}" title="trigger executions">{{ object.job_id}}</a>
-          <button
-            class="btn btn-sm btn-execute-job"
-            title="Click to execute this job's task"
-            style="display: inline-block;"
-            data-task-id="{{object.job.task.id}}"
-          >
-            <i class="icon icon-refresh"></i>
-          </button>
+          <a href="{{ url('jobs_detail', object.job_id) }}" >{{ object.job_id}}</a>
         </td>
       </tr>
       {{ macros.tr_kv('Run time', iso_time(object.run_time)) }}
@@ -55,6 +38,15 @@
       {{ macros.tr_kv('Env', object.env, type='codeblock') }}
       </tbody>
     </table>
+
+    <div class="detail-actions">
+      <button
+        class="btn btn-sm btn-primary btn-execute-job"
+        data-job-id="{{object.job.id}}"
+      >
+        Re-run Job
+      </button>
+    </div>
   </section>
 
   {% if object.traceback %}

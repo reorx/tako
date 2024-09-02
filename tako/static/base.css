@@ -101,6 +101,13 @@ h2 > .sublink {
   flex-shrink: 0;
 }
 
+/* detail */
+.detail-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
 
 /* event drop */
 

@@ -133,6 +133,10 @@ class JobsDetailView(DetailView):
 
 
 class TasksDetailView(DetailView):
+    model = Task
+
+    slug_field = 'id'
+
     def get_template_names(self):
         return 'tasks_detail.html'
 

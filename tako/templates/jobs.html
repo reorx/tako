@@ -26,7 +26,7 @@
       <th style="width: 5em;">ID</th>
       <th>Task</th>
       <th>Trigger</th>
-      <th style="width: 15em;">Next run time</th>
+      <th style="width: 24em;">Next run time</th>
       <th style="width: 5em;">Actions</th>
     </thead>
   {% endif %}
@@ -45,7 +45,7 @@
         <td>
           <code>{{ aps_job.trigger }}</code>
         </td>
-        <td><span class="code-font">{{ obj.next_run_time|iso_time }}</span></td>
+        <td>{{ obj.next_run_time|iso_time }} ({{ relative_to_now(obj.next_run_time) }})</td>
 
         <td>
           <div style="display: flex; gap: 16px;">
