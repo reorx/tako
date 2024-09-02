@@ -19,21 +19,21 @@
       <a class="sublink" href="{% url 'executions' %}">more</a>
     </h2>
 
-    {% include "executions_table.html" with executions=all_list %}
+    {% include "executions_table.html" with object_list=all_list %}
   </section>
 
   <section>
     <h2>Executions [SUCCESS]
       <a class="sublink" href="{% url 'executions' %}?{{ 'SUCCESS'|status_params|encode_params_with_page }}">more</a>
     </h2>
-    {% include "executions_table.html" with executions=success_list %}
+    {% include "executions_table.html" with object_list=success_list %}
   </section>
 
   <section>
     <h2>Executions [Other statuses]
       <a class="sublink" href="{% url 'executions' %}?{{ 'SUCCESS'|status_params:True|encode_params_with_page }}">more</a>
     </h2>
-    {% include "executions_table.html" with executions=error_list %}
+    {% include "executions_table.html" with object_list=error_list %}
   </section>
 {% endblock %}
 

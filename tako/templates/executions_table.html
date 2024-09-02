@@ -14,36 +14,36 @@
   </thead>
 {% endif %}
   <tbody>
-  {% for exec in object_list %}
+  {% for obj in object_list %}
     <tr>
-      <td><a href="{% url 'executions_detail' exec.id %}" class="number-font">{{ exec.id }}</a></td>
+      <td><a href="{% url 'executions_detail' obj.id %}" class="number-font">{{ obj.id }}</a></td>
       <td>
-        {% with aps_job=exec.job.aps_job %}
+        {% with aps_job=obj.job.aps_job %}
         <code>{{ aps_job.name }} | {{ aps_job.trigger }} </code>
         {% endwith %}
 
-        <a href="{% url 'jobs_detail' exec.job.id %}" title="job executions">
+        <a href="{% url 'jobs_detail' obj.job.id %}" title="job executions">
           <span class="chip">Job</span>
         </a>
-        {% if exec.job.task %}
-          <a href="{% url 'tasks_detail' exec.job.task.id %}">
+        {% if obj.job.task %}
+          <a href="{% url 'tasks_detail' obj.job.task.id %}">
             <span class="chip">Task</span>
           </a>
         {% endif %}
       </td>
-      <td><span class="label {{ exec.status|spectre_label_class }}">{{ exec.status }}</span></td>
-      <td><span class="number-font">{{ exec.duration|duration }}</span></td>
+      <td><span class="label {{ obj.status|spectre_label_class }}">{{ obj.status }}</span></td>
+      <td><span class="number-font">{{ obj.duration|duration }}</span></td>
       <td>
-        <span class="number-font">{{ exec.run_time|iso_time }}</span>
+        <span class="number-font">{{ obj.run_time|iso_time }}</span>
       </td>
-      <td><span class="number-font">{{ exec.job.next_run_time|iso_time }}</span></td>
+      <td><span class="number-font">{{ obj.job.next_run_time|iso_time }}</span></td>
       {% if request.user.is_authenticated and request.user.is_superuser %}
       <td>
         <div style="display: flex; gap: 8px;">
           <button
             class="btn btn-sm tooltip tooltip-left btn-filter-job"
             data-tooltip="Filter executions by this job"
-            data-job-id="{{exec.job.id}}"
+            data-job-id="{{obj.job.id}}"
           >
             <i class="icon icon-flag"></i>
           </button>
@@ -51,13 +51,13 @@
           <button
             class="btn btn-sm tooltip tooltip-left btn-execute-job"
             data-tooltip="Execute job now"
-            data-job-id="{{exec.job.id}}"
+            data-job-id="{{obj.job.id}}"
           >
             <i class="icon icon-refresh"></i>
           </button>
 
-          {% if exec.task_trigger.create_type == 'instant_task' %}
-            <button class="btn btn-sm btn-cancel-job" data-job-id="{{exec.id}}">
+          {% if obj.task_trigger.create_type == 'instant_task' %}
+            <button class="btn btn-sm btn-cancel-job" data-job-id="{{obj.id}}">
               <i class="icon icon-minus"></i>
             </button>
           {% endif %}
