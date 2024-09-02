@@ -51,9 +51,8 @@ class Script(models.Model):
         db_table = 'tako_script'
 
 
-
 class ScriptVersion(models.Model):
-    script = models.ForeignKey('Script', on_delete=models.CASCADE)
+    script = models.ForeignKey('Script', on_delete=models.CASCADE, related_name='versions')
     version = models.IntegerField()
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

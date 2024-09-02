@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ static('lib/spectre-exp.min.css') }}">
+{% endblock %}
+
+{% import "_detail_macros.html" as macros %}
+{% block main %}
+  <h1>Script Detail</h1>
+
+  <section>
+    <h2>Info</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 10em;">Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{ macros.tr_kv('ID', object.id, type='code') }}
+      {{ macros.tr_kv('Filename', object.filename) }}
+      {{ macros.tr_kv('Created At', object.created_at, type='time') }}
+      {{ macros.tr_kv('Updated At', object.updated_at, type='time') }}
+      </tbody>
+    </table>
+
+    <div class="detail-actions">
+      <button
+        class="btn btn-sm btn-primary"
+      >
+        Edit
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Content</h2>
+    <pre class="code"><code>{{ object.content }}</code></pre>
+  </section>
+
+  <section>
+    <h2>Versions</h2>
+    <div class="timeline">
+      {% for sv in object.versions.defer('content').order_by('-created_at') %}
+      <div class="timeline-item">
+        <div class="timeline-left"><a class="timeline-icon" href="#timeline-example-1"></a></div>
+        <div class="timeline-content">
+          <div class="tile">
+            <div class="tile-content">
+              <a href="/admin/tako/scriptversion/{{ sv.id }}/change/" target="_blank">v{{ sv.version }}
+                <span style="color: #999;">({{ sv.created_at|iso_time }})</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block body_end %}
+{% endblock %}

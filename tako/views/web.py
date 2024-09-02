@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
 from ..models.job import DjangoJob, DjangoJobExecution
-from ..models.task import Task
+from ..models.task import Script, Task
 from .base import filter_executions_qs, get_page_range, get_param
 
 
@@ -142,5 +142,9 @@ class TasksDetailView(DetailView):
 
 
 class ScriptsDetailView(DetailView):
+    model = Script
+
+    slug_field = 'id'
+
     def get_template_names(self):
         return 'scripts_detail.html'

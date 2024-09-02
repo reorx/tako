@@ -108,6 +108,14 @@ h2 > .sublink {
   margin-top: 16px;
 }
 
+.timeline .timeline-item div.timeline-content {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.timeline .timeline-item:last-of-type::before {
+  display: none;
+}
+
 
 /* event drop */
 
