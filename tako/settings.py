@@ -97,8 +97,16 @@ ROOT_URLCONF = 'tako.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'DIRS': ['./tako/templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'tako.lib.jinja2.environment',
+        },
+    },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

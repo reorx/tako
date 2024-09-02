@@ -1,6 +1,5 @@
-{% load tako_filters %}
 <table class="table">
-{% if executions %}
+{% if object_list %}
   <thead>
     <th style="width: 5em;">ID</th>
     <th>Job / Task</th>
@@ -8,25 +7,22 @@
     <th style="width: 5em;">Duration</th>
     <th style="width: 15em;">Run time</th>
     <th style="width: 15em;">Next run time</th>
-    {% if request.user.is_authenticated and request.user.is_superuser %}
-      <th style="width: 5em;">Actions</th>
-    {% endif %}
+    <th style="width: 5em;">Actions</th>
   </thead>
 {% endif %}
   <tbody>
   {% for obj in object_list %}
     <tr>
-      <td><a href="{% url 'executions_detail' obj.id %}" class="number-font">{{ obj.id }}</a></td>
+      <td><a href="{{ url('executions_detail', obj.id) }}" class="number-font">{{ obj.id }}</a></td>
       <td>
-        {% with aps_job=obj.job.aps_job %}
+        {% set aps_job = obj.job.aps_job() %}
         <code>{{ aps_job.name }} | {{ aps_job.trigger }} </code>
-        {% endwith %}
 
-        <a href="{% url 'jobs_detail' obj.job.id %}" title="job executions">
+        <a href="{{ url('jobs_detail', obj.job.id) }}" title="job executions">
           <span class="chip">Job</span>
         </a>
         {% if obj.job.task %}
-          <a href="{% url 'tasks_detail' obj.job.task.id %}">
+          <a href="{{ url('tasks_detail', obj.job.task.id) }}">
             <span class="chip">Task</span>
           </a>
         {% endif %}
@@ -37,9 +33,8 @@
         <span class="number-font">{{ obj.run_time|iso_time }}</span>
       </td>
       <td><span class="number-font">{{ obj.job.next_run_time|iso_time }}</span></td>
-      {% if request.user.is_authenticated and request.user.is_superuser %}
       <td>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 16px;">
           <button
             class="btn btn-sm tooltip tooltip-left btn-filter-job"
             {% if nav_executions %}data-nav-executions="true"{% endif %}
@@ -49,6 +44,7 @@
             <i class="icon icon-flag"></i>
           </button>
 
+          {% if request.user.is_superuser %}
           <button
             class="btn btn-sm tooltip tooltip-left btn-execute-job"
             data-tooltip="Execute job now"
@@ -57,18 +53,18 @@
             <i class="icon icon-refresh"></i>
           </button>
 
-          {% if obj.task_trigger.create_type == 'instant_task' %}
+          {% if False %}
             <button class="btn btn-sm btn-cancel-job" data-job-id="{{obj.id}}">
               <i class="icon icon-minus"></i>
             </button>
           {% endif %}
+          {% endif %}
         </div>
       </td>
-      {% endif %}
       </td>
     </tr>
 
-    {% empty %}
+  {% else %}
     <tr>No executions yet.</tr>
   {% endfor %}
   </tbody>

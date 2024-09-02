@@ -1,7 +1,6 @@
-{% load static %}
-<script src="{% static "lib/d3.min.js" %}"></script>
-<script src="{% static "lib/event-drops@1.2.0.min.js" %}"></script>
-<script src="{% static "event-drops-utils.js" %}"></script>
+<script src="{{ static("lib/d3.min.js") }}"></script>
+<script src="{{ static("lib/event-drops@1.2.0.min.js") }}"></script>
+<script src="{{ static("event-drops-utils.js") }}"></script>
 <script>
   (function() {
     var chart_el = document.getElementById('event-drops-chart');

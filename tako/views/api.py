@@ -3,12 +3,12 @@ from django.forms.models import model_to_dict
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.db import get_x_by_y
-from ..models.job import DjangoJobExecution
 # TODO import models
 # from .models import ManagerJob, ManagerJobExecution, ManagerTask, standard_status
 # TODO import job_store
 # from .myjobs import job_store
-from ..templatetags.tako_filters import get_spectre_label_class
+from ..lib.jinja2 import get_spectre_label_class
+from ..models.job import DjangoJobExecution
 from .base import APIView, filter_executions_qs
 
 

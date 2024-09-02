@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% load tako_filters %}
-{% load static %}
 
 {% block head %}
 {% endblock %}
@@ -14,7 +12,7 @@
   </div>
 
   <div class="filters-group">
-    {% if params.job_id is not None %}
+    {% if 'job_id' in params %}
     <div>
       <label>Job:</label>
       <span class="chip">
@@ -36,15 +34,17 @@
 </section>
 
 <section class="pjax-container">
-  {% include "_executions_table.html" with object_list=object_list %}
+  {% include "_executions_table.html" %}
 
-  {% url 'executions' as base_url %}
-  {% include "_pagination.html" with page_obj=page_obj page_range=page_range base_url=base_url %}
+  {% with %}
+    {% set base_url = url('executions') %}
+    {% include "_pagination.html" %}
+  {% endwith %}
 </section>
 {% endblock %}
 
 {% block body_end %}
-<script src="{% static "lib/pjax-standalone.min.js" %}"></script>
+<script src="{{ static("lib/pjax-standalone.min.js") }}"></script>
 
 {% include "_event_drops.html" %}
 <script>

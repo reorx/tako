@@ -1,9 +1,8 @@
-{% load tako_filters %}
 <div>
   <ul class="pagination">
     {% if page_obj.has_previous %}
     <li class="page-item">
-      <a href="{{ base_url }}?{{ params|encode_params_with_page:page_obj.previous_page_number }}">Previous</a>
+      <a href="{{ base_url }}?{{ encode_params_with_page(params, page_obj.previous_page_number) }}">Previous</a>
       {% else %}
     <li class="page-item disabled">
       <a href="#" tabindex="-1">Previous</a>
@@ -19,14 +18,14 @@
       {% if i == page_ellipsis %}
       <span>...</span>
       {% else %}
-      <a href="{{ base_url }}?{{ params|encode_params_with_page:i }}">{{ i }}</a>
+      <a href="{{ base_url }}?{{ encode_params_with_page(params, i) }}">{{ i }}</a>
       {% endif %}
     </li>
     {% endfor %}
 
     {% if page_obj.has_next %}
     <li class="page-item">
-      <a href="{{ base_url }}?{{ params|encode_params_with_page:page_obj.next_page_number }}">Next</a>
+      <a href="{{ base_url }}?{{ encode_params_with_page(params, page_obj.next_page_number) }}">Next</a>
       {% else %}
     <li class="page-item disabled">
       <a href="#" tabindex="-1">Next</a>

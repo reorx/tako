@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
-{% load tako_filters %}
 
 {% block head %}
 {% endblock %}
@@ -17,24 +15,36 @@
 
   <section>
     <h2>Executions
-      <a class="sublink" href="{% url 'executions' %}">more</a>
+      <a class="sublink" href="{{ url('executions') }}">more</a>
     </h2>
 
-    {% include "_executions_table.html" with object_list=all_list nav_executions=True %}
+    {% with %}
+      {% set object_list = all_list %}
+      {% set nav_executions = True %}
+      {% include "_executions_table.html" %}
+    {% endwith %}
   </section>
 
   <section>
     <h2>Executions [SUCCESS]
-      <a class="sublink" href="{% url 'executions' %}?{{ 'SUCCESS'|status_params|encode_params_with_page }}">more</a>
+      <a class="sublink" href="{{ url('executions') }}?{{ encode_params_with_page(status_params('SUCCESS')) }}">more</a>
     </h2>
-    {% include "_executions_table.html" with object_list=success_list nav_executions=True %}
+    {% with %}
+      {% set object_list = success_list %}
+      {% set nav_executions = True %}
+      {% include "_executions_table.html" %}
+    {% endwith %}
   </section>
 
   <section>
     <h2>Executions [Other statuses]
-      <a class="sublink" href="{% url 'executions' %}?{{ 'SUCCESS'|status_params:True|encode_params_with_page }}">more</a>
+      <a class="sublink" href="{{ url('executions') }}?{{ encode_params_with_page(status_params('SUCCESS', True)) }}">more</a>
     </h2>
-    {% include "_executions_table.html" with object_list=error_list nav_executions=True %}
+    {% with %}
+      {% set object_list = error_list %}
+      {% set nav_executions = True %}
+      {% include "_executions_table.html" %}
+    {% endwith %}
   </section>
 {% endblock %}
 

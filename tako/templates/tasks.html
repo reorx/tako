@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load tako_filters %}
 
 {% block head %}
 {% endblock %}
@@ -13,15 +12,13 @@
     <thead>
       <th style="width: 5em;">ID</th>
       <th>Name</th>
-      <th>Job</th>
       <th>Script</th>
+      <th>Job</th>
       <th>Trigger Type</th>
       <th>Trigger Args</th>
       <th style="width: 15em;">Created At</th>
       <th style="width: 15em;">Updated At</th>
-      {% if request.user.is_superuser %}
-        <th style="width: 5em;">Actions</th>
-      {% endif %}
+      <th style="width: 5em;">Actions</th>
     </thead>
   {% endif %}
     <tbody>
@@ -29,19 +26,19 @@
       <tr>
         <td>{{ obj.id }}</td>
         <td>
-          <a href="{% url 'tasks_detail' obj.id %}">{{ obj.name }}</a>
+          <a href="{{ url('tasks_detail', obj.id) }}">{{ obj.name }}</a>
+        </td>
+        <td>
+          <a href="{{ url('scripts_detail', obj.script.id) }}">
+            {{ obj.script.filename }}
+          </a>
         </td>
         <td>
           {% if obj.job %}
-            <a href="{% url 'jobs_detail' obj.job.id %}">
+            <a href="{{ url('jobs_detail', obj.job.id) }}">
               {{ obj.job.id }}
             </a>
           {% endif %}
-        </td>
-        <td>
-          <a href="{% url 'scripts_detail' obj.script.id %}">
-            {{ obj.script.filename }}
-          </a>
         </td>
         <td>
           {{ obj.trigger_type }}
@@ -54,7 +51,15 @@
 
         {% if request.user.is_superuser %}
         <td>
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 16px;">
+            <button
+              class="btn btn-sm tooltip tooltip-left btn-filter-job"
+              data-nav-executions="true"
+              data-tooltip="Filter executions by this job"
+              data-job-id="{{obj.job.id}}"
+            >
+              <i class="icon icon-flag"></i>
+            </button>
             <button
               class="btn btn-sm tooltip tooltip-left btn-execute-job"
               data-tooltip="Execute job now"
@@ -67,7 +72,7 @@
         {% endif %}
       </tr>
 
-      {% empty %}
+    {% else %}
       <tr>No tasks yet.</tr>
     {% endfor %}
     </tbody>
