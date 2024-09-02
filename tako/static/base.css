@@ -98,6 +98,7 @@ h2 > .sublink {
 }
 .filters-group label {
   color: #777;
+  flex-shrink: 0;
 }
 
 

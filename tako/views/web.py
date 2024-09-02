@@ -82,7 +82,26 @@ class JobsView(ListView):
         return 'jobs.html'
 
     def get_queryset(self):
-        return DjangoJob.objects.select_related('task').all().order_by('-id')
+        params = {}
+
+        with_task = get_param(self.request, 'with_task', int)
+        if with_task is not None:
+            params['with_task'] = with_task
+
+        self.request.params = params
+
+        qs = DjangoJob.objects.select_related('task').all().order_by('-id')
+        if with_task is not None:
+            qs = qs.filter(task__isnull=not with_task)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            params=self.request.params,
+            with_task_choices=[('', '---'), (1, 'Yes'), (0, 'No')],
+        )
+        return context
 
 
 class TasksView(ListView):

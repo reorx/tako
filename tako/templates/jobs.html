@@ -11,14 +11,11 @@
   <div class="filters-group">
     <div>
       <label>Associated with Task:</label>
-      <div class="form-group">
-        <label class="form-radio form-inline">
-          <input type="radio" name="gender" checked=""><i class="form-icon"></i> Yes
-        </label>
-        <label class="form-radio form-inline">
-          <input type="radio" name="gender"><i class="form-icon"></i> No
-        </label>
-      </div>
+      <select class="form-select select-sm select-with-task" style="min-width: 100px;">
+        {% for v, t in with_task_choices %}
+        <option value="{{ v }}" {% if v == params.with_task %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
     </div>
   </div>
 </section>
@@ -53,9 +50,18 @@
         </td>
         <td><span class="number-font">{{ obj.next_run_time|iso_time }}</span></td>
 
-        {% if request.user.is_superuser %}
         <td>
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 16px;">
+            <button
+              class="btn btn-sm tooltip tooltip-left btn-filter-job"
+              data-nav-executions="true"
+              data-tooltip="Filter executions by this job"
+              data-job-id="{{obj.id}}"
+            >
+              <i class="icon icon-flag"></i>
+            </button>
+
+            {% if request.user.is_superuser %}
             <button
               class="btn btn-sm tooltip tooltip-left btn-execute-job"
               data-tooltip="Execute job now"
@@ -63,9 +69,9 @@
             >
               <i class="icon icon-refresh"></i>
             </button>
+            {% endif %}
           </div>
         </td>
-        {% endif %}
       </tr>
       {% endwith %}
 
@@ -78,4 +84,16 @@
 {% endblock %}
 
 {% block body_end %}
+<script>
+  delegate('.select-with-task', 'change', (e) => {
+    const value = e.delegateTarget.value;
+    const params = new URLSearchParams(window.location.search);
+    if (value === "") {
+      params.delete('with_task')
+    } else {
+      params.set('with_task', value)
+    }
+    TAKO.setSearchParams(params)
+  })
+</script>
 {% endblock %}
