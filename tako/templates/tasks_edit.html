@@ -72,6 +72,8 @@
         {% endfor %}
       {% endcall %}
 
+      <div class="form-errors" style="display: none;"></div>
+
       <div class="detail-actions">
         <button
           class="btn btn-primary"
@@ -89,7 +91,6 @@
         </button>
         {% endif %}
       </div>
-
     </form>
   </section>
 {% endblock %}
@@ -145,6 +146,19 @@
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
+    }).then((res) => {
+      if (res.ok) {
+        TAKO.showToast('Task saved', 'success')
+        setTimeout(() => {
+          window.location.href = '{{ url("tasks") }}'
+        }, 2000)
+      } else {
+        console.error('failed to save task', res)
+        res.json().then((data) => {
+          TAKO.showToast('Failed to save task', 'error')
+          TAKO.showFormErrors(data.errors)
+        })
+      }
     })
   })
 </script>

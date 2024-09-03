@@ -37,6 +37,13 @@ class Task(models.Model):
     def __str__(self):
         return f'Task<{model_to_dict(self)}>'
 
+    def set_name_by_script(self):
+        if not self.name:
+            name = self.script.filename
+            if Task.objects.filter(name=name).exists():
+                raise ValueError('Task with the same name (script filename) already exists')
+            self.name = name
+
 
 class Script(models.Model):
     filename = models.CharField(max_length=64, unique=True)

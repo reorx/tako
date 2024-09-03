@@ -1,5 +1,6 @@
 
 
+
 from apscheduler.job import Job
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
@@ -70,6 +71,8 @@ def delete_task(obj: Task):
 
 
 def create_or_update_task_from_obj(obj: Task):
+    obj.set_name_by_script()
+
     with atomic():
         job_id = create_task_job(obj)
 

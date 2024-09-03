@@ -1,7 +1,8 @@
 from django.forms.models import model_to_dict
+from django.http import HttpResponse
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from ..api.task import trigger_dt_map
+from ..api.task import create_or_update_task_from_obj, delete_task, trigger_dt_map
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.db import get_x_by_y
@@ -11,8 +12,8 @@ from ..helper.db import get_x_by_y
 # from .myjobs import job_store
 from ..lib.jinja2 import get_spectre_label_class
 from ..models.job import DjangoJobExecution
-from ..models.task import TriggerType
-from .base import APIView, filter_executions_qs, validate_params
+from ..models.task import Script, Task, TriggerType
+from .base import APIView, filter_executions_qs, handle_exception, json_response, validate_params
 
 
 class TaskExecuteView(APIView):
@@ -93,25 +94,72 @@ class TasksEditParams(BaseModel):
 
     @field_validator('trigger_type')
     def validate_trigger_type(cls, value):
-        assert value in TriggerType.values()
+        assert value in TriggerType.values(), f'trigger_type must be one of {TriggerType.values()}'
+        return value
+
+    @field_validator('trigger_value')
+    def validate_trigger_value(cls, value):
+        assert value, 'trigger_value must not be empty'
         return value
 
     @model_validator(mode='after')
-    def validate_trigger_value(self):
+    def validate_obj(self):
         type_cls = trigger_dt_map[self.trigger_type]
         type_cls.model_validate(self.trigger_value)
         return self
 
 
 @validate_params(TasksEditParams, 'POST')
+@handle_exception(Exception)
 def tasks_create_view(request):
-    print(request.params)
-    pass
+    params: TasksEditParams = request.params
+    script = Script.objects.get(id=params.script_id)
+    task = Task(
+        name='',
+        script=script,
+        script_args=params.script_args,
+        trigger_type=params.trigger_type,
+        trigger_value=params.trigger_value,
+    )
+    create_or_update_task_from_obj(task)
+
+    return json_response({
+        'data': {
+            'id': task.id,
+        },
+    })
 
 
+@validate_params(TasksEditParams, 'POST')
+@handle_exception(Exception)
 def tasks_update_view(request):
-    pass
+    params: TasksEditParams = request.params
+    task = Task.objects.get(id=params.id)
+
+    task.name = params.name
+    task.script = Script.objects.get(id=params.script_id)
+    task.script_args = params.script_args
+    task.trigger_type = params.trigger_type
+    task.trigger_value = params.trigger_value
+
+    create_or_update_task_from_obj(task)
+
+    return json_response({
+        'data': {
+            'id': task.id,
+        },
+    })
 
 
+class TasksDeleteParams(BaseModel):
+    id: int
+
+
+@validate_params(TasksDeleteParams, 'POST')
+@handle_exception(Exception)
 def tasks_delete_view(request):
-    pass
+    params: TasksDeleteParams = request.params
+    task = Task.objects.get(id=params.id)
+    delete_task(task)
+
+    return HttpResponse(status=204)

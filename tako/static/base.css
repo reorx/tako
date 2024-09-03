@@ -1,10 +1,59 @@
+/* base */
+.toast-container {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+}
+.header-bar {
+  position: absolute;
+  top: 1em;
+  right: 2em;
+}
+.header-bar > a {
+  display: inline-block;
+  margin: 0 .5em;
+  padding: 0 .3em;
+}
+.main {
+  padding: 2em;
+}
+
+/* basic */
+section {
+  margin-bottom: 1.5em;
+}
+section.container {
+  margin-bottom: .8em;
+}
 h1 {
   font-size: 2em;
 }
 h2 {
   font-size: 1.5em;
 }
+h2 > .sublink {
+  font-size: .8rem;
+  margin-left: .8rem;
+  font-weight: normal;
+}
+a:visited {
+    color: #5755d9;
+}
+.code-font {
+  font-family: "Andale Mono", Consolas, Courier, monospace;
+  font-size: .9em;
+}
+.text-underline {
+  text-decoration: underline;
+}
+.right-align {
+  display: flex;
+  flex-direction: row-reverse;
+}
 
+/* table */
 .table td, .table th {
   padding: .5em .4em;
 }
@@ -29,10 +78,6 @@ td > pre {
   margin: 0;
 }
 
-section.container {
-  margin-bottom: .8em;
-}
-
 .label.label-success {
   background: #ade0bc;
   color: #03502E;
@@ -40,49 +85,6 @@ section.container {
 .label.label-error {
   background: #efc8bf;
   color: #a02600;
-}
-
-a:visited {
-    color: #5755d9;
-}
-
-.header-bar {
-  position: absolute;
-  top: 1em;
-  right: 2em;
-}
-.header-bar > a {
-  display: inline-block;
-  margin: 0 .5em;
-  padding: 0 .3em;
-}
-
-.main {
-  padding: 2em;
-}
-
-section {
-  margin-bottom: 1.5em;
-}
-
-.code-font {
-  font-family: "Andale Mono", Consolas, Courier, monospace;
-  font-size: .9em;
-}
-
-.right-align {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
-h2 > .sublink {
-  font-size: .8rem;
-  margin-left: .8rem;
-  font-weight: normal;
-}
-
-.text-underline {
-  text-decoration: underline;
 }
 
 /* filter */
@@ -116,9 +118,20 @@ h2 > .sublink {
   display: none;
 }
 
+/* form */
+.form-errors {
+  border: 1px solid #f00;
+  border-radius: 2px;
+  color: #333;
+  margin: 16px 0;
+  padding: 12px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-family: Monaco, Consolas, Courier, monospace;
+}
+
 
 /* event drop */
-
 .drop {
   cursor: pointer;
 }

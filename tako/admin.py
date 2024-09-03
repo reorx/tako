@@ -12,9 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from .api.scheduler import get_scheduler
-from .api.task import (
-    create_or_update_script_from_obj, create_or_update_task_from_obj, delete_task
-)
+from .api.task import create_or_update_script_from_obj, create_or_update_task_from_obj, delete_task
 from .api.types import CronTriggerDT, DateTriggerDT, IntervalTriggerDT
 from .lib.jobstores import DjangoJobStore, DjangoMemoryJobStore
 from .models import DjangoJob, DjangoJobExecution, Script, ScriptVersion, Task
@@ -179,7 +177,6 @@ class TaskForm(forms.ModelForm):
             name = script.filename
             if Task.objects.filter(name=name).exists():
                 raise forms.ValidationError('Task with the same name (script filename) already exists')
-        self.cleaned_data['name'] = name
         return self.cleaned_data
 
     def clean_trigger_value(self):

@@ -9,6 +9,8 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from pydantic import ValidationError
 
+from ..log import lg
+
 
 class ParamsError(Exception):
     pass
@@ -53,7 +55,6 @@ class APIView(View):
             ):
                 return self.json_response(
                     {
-                        'success': False,
                         'error': 'superuser required'
                     }, 403
                 )
@@ -63,7 +64,6 @@ class APIView(View):
         except Exception as e:
             return self.json_response(
                 {
-                    'success': False,
                     'error': f'invalid request json body: {e}'
                 }, 400
             )
@@ -158,12 +158,31 @@ def validate_params(type_cls, method='GET'):
                     params = type_cls.model_validate_json(request.body)
             except ValidationError as e:
                 return json_response({
-                    'success': False,
-                    'error': f'{e}'
+                    'errors': [f'{_get_error_loc(err)}: {err["msg"]}' for err in e.errors()],
                 }, 400)
 
             request.params = params
             return func(request, *args, **kwargs)
 
+        return wrapper
+    return deco
+
+
+def _get_error_loc(err):
+    loc = err['loc']
+    if isinstance(loc, tuple):
+        return '.'.join(loc)
+    return loc
+
+
+def handle_exception(exc_cls):
+    def deco(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except exc_cls as e:
+                lg.info('handle_exception', exc_info=True)
+                return json_response({'errors': [f'{e}']}, 400)
         return wrapper
     return deco

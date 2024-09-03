@@ -13,6 +13,7 @@
   {% endblock %}
 </head>
 <body>
+  <div class="toast-container"></div>
   <div class="header-bar">
     <a href="{{ url('dashboard') }}">Dashboard</a>
     <a href="{{ url('jobs') }}">Jobs</a>
@@ -39,6 +40,28 @@
         const paramsStr = params.toString()
         window.location = window.location.pathname + (paramsStr ? '?' + paramsStr : '')
       },
+      showFormErrors: function(errors) {
+        const div = document.createElement('div')
+        div.textContent = `Errors:\n${errors.map(s => '• ' + s).join('\n')}`
+        const el = document.querySelector('.form-errors')
+        // empty el
+        while (el.firstChild) {
+          el.removeChild(el.firstChild)
+        }
+        el.appendChild(div)
+        el.style.display = 'block'
+
+      },
+      showToast: function(content, type) {
+        const div = document.createElement('div')
+        div.className = `toast toast-${type}`
+        div.textContent = content
+        const el = document.querySelector('.toast-container')
+        while (el.firstChild) {
+          el.removeChild(el.firstChild)
+        }
+        el.appendChild(div)
+      }
     }
   </script>
   <script src="{{ static("button-events.js") }}"></script>
