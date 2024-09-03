@@ -7,6 +7,13 @@
 <h1>Tasks</h1>
 
 <section>
+  <div>
+    <a href="{{ url('tasks_create') }}">
+      <button class="btn btn-primary">
+        Create Task
+      </button>
+    </a>
+  </div>
   <table class="table">
   {% if object_list %}
     <thead>
@@ -49,7 +56,6 @@
         <td>{{ obj.created_at|iso_time }}</td>
         <td>{{ obj.updated_at|iso_time }}</td>
 
-        {% if request.user.is_superuser %}
         <td>
           <div style="display: flex; gap: 16px;">
             <button
@@ -60,6 +66,17 @@
             >
               <i class="icon icon-flag"></i>
             </button>
+
+            {% if request.user.is_superuser %}
+            <a href="{{ url('tasks_edit', obj.id) }}">
+            <button
+              class="btn btn-sm tooltip tooltip-left"
+              data-tooltip="Edit task"
+            >
+              <i class="icon icon-edit"></i>
+            </button>
+            </a>
+
             <button
               class="btn btn-sm tooltip tooltip-left btn-execute-job"
               data-tooltip="Execute job now"
@@ -67,9 +84,9 @@
             >
               <i class="icon icon-refresh"></i>
             </button>
+            {% endif %}
           </div>
         </td>
-        {% endif %}
       </tr>
 
     {% else %}

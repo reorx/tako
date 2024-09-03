@@ -42,11 +42,19 @@
     </table>
 
     <div class="detail-actions">
+      <a href="{{ url('tasks_edit', object.id) }}">
       <button
-        class="btn btn-sm btn-primary btn-execute-job"
+        class="btn btn-primary"
         data-task-id="{{object.id}}"
       >
-        Run Job
+        Edit Task
+      </button>
+      </a>
+      <button
+        class="btn btn-primary btn-execute-job"
+        data-job-id="{{object.job.id}}"
+      >
+        Run Task's Job
       </button>
     </div>
   </section>

@@ -40,6 +40,11 @@ def register_context(f):
     return f
 
 
+@register_context
+def ternary(value, true_val, false_val):
+    return true_val if value else false_val
+
+
 @register_filter
 def spectre_label_class(status):
     return get_spectre_label_class(status)

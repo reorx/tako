@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+  .trigger-args input[value]:not([value=""]) {
+    background-color: #f0f0f0;
+  }
+</style>
+{% endblock %}
+
+{% import "_detail_macros.html" as macros %}
+{% block main %}
+
+  <h1>
+    {% if is_create %}
+      Create Task
+    {% else %}
+      Edit Task
+    {% endif %}
+  </h1>
+
+  <section>
+    <form class="form-horizontal" style="max-width: 800px;">
+      {{ macros.input_group('Name', 'name', object) }}
+
+      {% call(name) macros.input_group('Script', 'script_id', object) %}
+        <select class="form-select" name="{{ name }}">
+          <option value="" {% if not object %}selected{% endif %}>---</option>
+          {% for script in scripts %}
+          <option value="{{ script.id }}" {% if script.id == object.script_id %}selected{% endif %}>{{ script.filename }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn" style="margin-left: 1em;">Edit Script</button>
+      {% endcall %}
+
+      {{ macros.input_group('Script Args', 'script_args', object) }}
+
+      {% call(name) macros.input_group('Trigger Type', 'trigger_type', object) %}
+        <select class="form-select" name="{{ name }}">
+          <option value="" {% if not object %}selected{% endif %}>---</option>
+          {% for k, v in TriggerType.items() %}
+          <option value="{{ v }}" {% if v == object.trigger_type %}selected{% endif %}>{{ k }}</option>
+          {% endfor %}
+        </select>
+      {% endcall %}
+
+      <!-- <hr style="margin: 12px 0; height: 0; border: 0; border-bottom: 1px solid #ccc;"> -->
+
+      {% call(name) macros.input_group('Trigger Args', 'trigger_value', object) %}
+          <div
+            class="trigger-args"
+            style="display: {{ ternary(object, 'none', 'block') }};"
+          >Please select trigger type first</div>
+        {% for trigger_type, dt_cls in trigger_dt_map.items() %}
+          <div
+            class="trigger-args"
+            data-trigger-type="{{ trigger_type }}"
+            style="
+              display: {{ ternary(trigger_type == object.trigger_type, 'grid', 'none') }};
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+              gap: 8px;
+              width: 100%;
+            "
+          >
+            {% for key, property in dt_cls.schema()['properties'].items() %}
+              {{ macros.compact_input(key, name + '.' + key, object.trigger_value or {}, key) }}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% endcall %}
+
+
+      <div class="detail-actions">
+        <button
+          class="btn btn-primary"
+        >
+          Save
+        </button>
+        <button
+          class="btn btn-error btr-delete-task"
+          data-task-id="{{object.id}}"
+        >
+          Delete
+        </button>
+      </div>
+
+    </form>
+  </section>
+{% endblock %}
+
+{% block body_end %}
+<script>
+  delegate('select[name=trigger_type]', 'change', (e) => {
+    // console.log('on trigger type change', e.delegateTarget)
+    const value = e.delegateTarget.value
+    document.querySelectorAll('.trigger-args').forEach((el) => {
+      const triggerType = el.dataset.triggerType || ''
+      el.style.display = triggerType === value ? 'grid' : 'none'
+    })
+  })
+</script>
+{% endblock %}

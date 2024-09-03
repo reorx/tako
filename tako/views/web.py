@@ -1,10 +1,12 @@
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
+from ..api.types import CronTriggerDT, DateTriggerDT, IntervalTriggerDT
 from ..models.job import DjangoJob, DjangoJobExecution
-from ..models.task import Script, Task
+from ..models.task import Script, Task, TriggerType
 from .base import filter_executions_qs, get_page_range, get_param
 
 
@@ -148,3 +150,26 @@ class ScriptsDetailView(DetailView):
 
     def get_template_names(self):
         return 'scripts_detail.html'
+
+
+def get_tasks_edit_context(**kwargs):
+    context = dict(
+        scripts=Script.objects.all().order_by('-updated_at'),
+        TriggerType=TriggerType,
+        trigger_dt_map={
+            TriggerType.cron: CronTriggerDT,
+            TriggerType.interval: IntervalTriggerDT,
+            TriggerType.date: DateTriggerDT,
+        }
+    )
+    context.update(kwargs)
+    return context
+
+
+def tasks_edit_view(request, id):
+    task = Task.objects.get(id=id)
+    return render(request, 'tasks_edit.html', get_tasks_edit_context(object=task))
+
+
+def tasks_create_view(request):
+    return render(request, 'tasks_edit.html', get_tasks_edit_context(object={}))

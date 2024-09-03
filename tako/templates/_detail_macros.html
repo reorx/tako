@@ -20,3 +20,26 @@
   </td>
 </tr>
 {%- endmacro %}
+
+{% macro input_group(label, name, object, value_key=None, cols=12, label_cols=3) -%}
+<div class="form-group">
+  <div class="col-{{ label_cols }} col-sm-{{ cols }}">
+    <label class="form-label" for="input-{{ name }}">{{ label }}</label>
+  </div>
+  <div class="col-{{ cols - label_cols }} col-sm-{{ cols }}" style="display: flex; align-items: center;">
+    {% if caller %}
+      {{ caller(name) }}
+    {% else %}
+      {% set value_key = value_key or name %}
+      <input class="form-input" type="text" name="{{ name }}" id="input-{{ name }}" value="{{ object[value_key]|default('') }}">
+    {% endif %}
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro compact_input(label, name, object, value_key) -%}
+<div class="input-group">
+  <span class="input-group-addon">{{ label }}</span>
+  <input class="form-input {{ ternary(object[value_key], 'bg-secondary', '') }}" type="text" name="{{ name }}" value="{{ object[value_key]|default('') }}">
+</div>
+{%- endmacro %}
