@@ -77,6 +77,7 @@
       <div class="detail-actions">
         <button
           class="btn btn-primary"
+          type="submit"
         >
           Save
         </button>
@@ -84,8 +85,9 @@
         {% if not is_create %}
         <div style="flex-grow: 1"></div>
         <button
-          class="btn btn-error btr-delete-task"
+          class="btn btn-error btn-delete-task"
           data-task-id="{{object.id}}"
+          type="button"
         >
           Delete
         </button>
@@ -153,10 +155,34 @@
           window.location.href = '{{ url("tasks") }}'
         }, 2000)
       } else {
-        console.error('failed to save task', res)
         res.json().then((data) => {
           TAKO.showToast('Failed to save task', 'error')
           TAKO.showFormErrors(data.errors)
+        })
+      }
+    })
+  })
+
+  delegate('.btn-delete-task', 'click', (e) => {
+    if (!confirm('Are you sure to delete this task?')) {
+      return
+    }
+    fetch(TAKO.urls.apiTasksDelete, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({id: e.delegateTarget.dataset.taskId}),
+    }).then((res) => {
+      if (res.ok) {
+        TAKO.showToast('Task deleted', 'success')
+        setTimeout(() => {
+          window.location.href = '{{ url("tasks") }}'
+        }, 2000)
+      } else {
+        res.json().then((data) => {
+          TAKO.showToast('Failed to delete task', 'error')
+          alert('Failed to delete task: ' + data.errors.join(', '))
         })
       }
     })

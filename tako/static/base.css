@@ -77,6 +77,9 @@ td > pre {
   font-size: .9em;
   margin: 0;
 }
+td.empty {
+  text-align: center; padding: 12px;
+}
 
 .label.label-success {
   background: #ade0bc;
