@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -92,7 +93,9 @@ class JobsView(ListView):
 
         self.request.params = params
 
-        qs = DjangoJob.objects.select_related('task').all().order_by('-id')
+        qs = DjangoJob.objects.select_related('task').annotate(
+            executions_count=Count('executions')
+        ).all().order_by('-id')
         if with_task is not None:
             qs = qs.filter(task__isnull=not with_task)
         return qs
@@ -113,7 +116,9 @@ class TasksView(ListView):
         return 'tasks.html'
 
     def get_queryset(self):
-        return Task.objects.select_related('job', 'script').defer('script__content').all().order_by('-updated_at')
+        return Task.objects.select_related('job', 'script').defer('script__content').annotate(
+            executions_count=Count('job__executions')
+        ).all().order_by('-updated_at')
 
 
 class ExecutionsDetailView(DetailView):
@@ -164,7 +169,7 @@ def get_tasks_edit_context(**kwargs):
 
 def tasks_edit_view(request, id):
     task = Task.objects.get(id=id)
-    return render(request, 'tasks_edit.html', get_tasks_edit_context(object=task))
+    return render(request, 'tasks_edit.html', get_tasks_edit_context(object=task, is_create=False))
 
 
 def tasks_create_view(request):

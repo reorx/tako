@@ -26,6 +26,7 @@
       <th style="width: 5em;">ID</th>
       <th>Task</th>
       <th>Trigger</th>
+      <th>Executions</th>
       <th style="width: 24em;">Next run time</th>
       <th style="width: 5em;">Actions</th>
     </thead>
@@ -45,19 +46,13 @@
         <td>
           <code>{{ aps_job.trigger }}</code>
         </td>
+        <td>
+          <a href="{{ url_with_params('executions', params=dict(job_id=obj.id)) }}">{{ obj.executions_count }}</a>
+        </td>
         <td>{{ obj.next_run_time|iso_time }} ({{ relative_to_now(obj.next_run_time) }})</td>
 
         <td>
           <div style="display: flex; gap: 16px;">
-            <button
-              class="btn btn-sm tooltip tooltip-left btn-filter-job"
-              data-nav-executions="true"
-              data-tooltip="Filter executions by this job"
-              data-job-id="{{obj.id}}"
-            >
-              <i class="icon icon-flag"></i>
-            </button>
-
             {% if request.user.is_superuser %}
             <button
               class="btn btn-sm tooltip tooltip-left btn-execute-job"

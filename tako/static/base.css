@@ -90,6 +90,10 @@ td.empty {
   color: #a02600;
 }
 
+.table-actions {
+  margin-bottom: 16px;
+}
+
 /* filter */
 .filters-group {
   display: flex;

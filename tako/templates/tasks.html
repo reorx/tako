@@ -7,7 +7,7 @@
 <h1>Tasks</h1>
 
 <section>
-  <div>
+  <div class="table-actions">
     <a href="{{ url('tasks_create') }}">
       <button class="btn btn-primary">
         Create Task
@@ -21,6 +21,7 @@
       <th>Name</th>
       <th>Script</th>
       <th>Job</th>
+      <th>Executions</th>
       <th>Trigger Type</th>
       <th>Trigger Args</th>
       <th style="width: 15em;">Created At</th>
@@ -48,6 +49,9 @@
           {% endif %}
         </td>
         <td>
+          <a href="{{ url_with_params('executions', params=dict(job_id=obj.job.id)) }}">{{ obj.executions_count }}</a>
+        </td>
+        <td>
           {{ obj.trigger_type }}
         </td>
         <td>
@@ -58,15 +62,6 @@
 
         <td>
           <div style="display: flex; gap: 16px;">
-            <button
-              class="btn btn-sm tooltip tooltip-left btn-filter-job"
-              data-nav-executions="true"
-              data-tooltip="Filter executions by this task's job"
-              data-job-id="{{obj.job.id}}"
-            >
-              <i class="icon icon-flag"></i>
-            </button>
-
             {% if request.user.is_superuser %}
             <a href="{{ url('tasks_edit', obj.id) }}">
             <button
@@ -79,7 +74,7 @@
 
             <button
               class="btn btn-sm tooltip tooltip-left btn-execute-job"
-              data-tooltip="Execute job now"
+              data-tooltip="Execute task's job now"
               data-job-id="{{obj.job.id}}"
             >
               <i class="icon icon-refresh"></i>

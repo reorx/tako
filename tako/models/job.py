@@ -93,6 +93,7 @@ class DjangoJobExecution(models.Model):
         DjangoJob,
         on_delete=models.CASCADE,
         help_text=_("The job that this execution relates to."),
+        related_name='executions',
     )
 
     status = models.CharField(

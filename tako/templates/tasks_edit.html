@@ -49,10 +49,10 @@
       <!-- <hr style="margin: 12px 0; height: 0; border: 0; border-bottom: 1px solid #ccc;"> -->
 
       {% call(name) macros.input_group('Trigger Args', 'trigger_value', object) %}
-          <div
-            class="trigger-args"
-            style="display: {{ ternary(object, 'none', 'block') }};"
-          >Please select trigger type first</div>
+        <div
+          class="trigger-args"
+          style="display: {{ ternary(object, 'none', 'block') }};"
+        >Please select trigger type first</div>
         {% for trigger_type, dt_cls in trigger_dt_map.items() %}
           {% set key_prefix = name + '.' + trigger_type + '.' %}
           <div
@@ -139,7 +139,7 @@
 
     console.log('submitting', data)
 
-    const is_create = '{{ is_create }}'
+    const is_create = '{{ is_create }}' === 'True'
     const url = is_create ? TAKO.urls.apiTasksCreate : TAKO.urls.apiTasksUpdate
 
     fetch(url, {
@@ -153,7 +153,7 @@
         TAKO.showToast('Task saved', 'success')
         setTimeout(() => {
           window.location.href = '{{ url("tasks") }}'
-        }, 2000)
+        }, 1000)
       } else {
         res.json().then((data) => {
           TAKO.showToast('Failed to save task', 'error')

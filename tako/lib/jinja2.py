@@ -16,13 +16,9 @@ context = {}
 def environment(**options):
     env = Environment(**options)
 
-    def url(name, *args):
-        return reverse(name, args=args)
-
     env.globals.update(
         {
             "static": static,
-            "url": url,
         }
     )
     env.globals.update(context)
@@ -38,6 +34,19 @@ def register_filter(f):
 def register_context(f):
     context[f.__name__] = f
     return f
+
+
+@register_context
+def url(name, *args):
+    return reverse(name, args=args)
+
+
+@register_context
+def url_with_params(name, *args, params=None):
+    url = reverse(name, args=args)
+    if params:
+        url += '?' + urlencode(params)
+    return url
 
 
 @register_context

@@ -42,6 +42,14 @@
     </table>
 
     <div class="detail-actions">
+      <a href="{{ url_with_params('executions', params=dict(job_id=object.job.id)) }}">
+      <button
+        class="btn"
+      >
+        Show executions
+      </button>
+      </a>
+
       <a href="{{ url('tasks_edit', object.id) }}">
       <button
         class="btn btn-primary"
