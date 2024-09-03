@@ -20,11 +20,13 @@
   </h1>
 
   <section>
-    <form class="form-horizontal" style="max-width: 800px;">
+    <form class="form-horizontal edit-form" style="max-width: 800px;">
+      <input type="hidden" name="id" value="{{ object.id|default('') }}">
+
       {{ macros.input_group('Name', 'name', object) }}
 
       {% call(name) macros.input_group('Script', 'script_id', object) %}
-        <select class="form-select" name="{{ name }}">
+        <select class="form-select" name="{{ name }}" required>
           <option value="" {% if not object %}selected{% endif %}>---</option>
           {% for script in scripts %}
           <option value="{{ script.id }}" {% if script.id == object.script_id %}selected{% endif %}>{{ script.filename }}</option>
@@ -36,7 +38,7 @@
       {{ macros.input_group('Script Args', 'script_args', object) }}
 
       {% call(name) macros.input_group('Trigger Type', 'trigger_type', object) %}
-        <select class="form-select" name="{{ name }}">
+        <select class="form-select" name="{{ name }}" required>
           <option value="" {% if not object %}selected{% endif %}>---</option>
           {% for k, v in TriggerType.items() %}
           <option value="{{ v }}" {% if v == object.trigger_type %}selected{% endif %}>{{ k }}</option>
@@ -52,6 +54,7 @@
             style="display: {{ ternary(object, 'none', 'block') }};"
           >Please select trigger type first</div>
         {% for trigger_type, dt_cls in trigger_dt_map.items() %}
+          {% set key_prefix = name + '.' + trigger_type + '.' %}
           <div
             class="trigger-args"
             data-trigger-type="{{ trigger_type }}"
@@ -63,12 +66,11 @@
             "
           >
             {% for key, property in dt_cls.schema()['properties'].items() %}
-              {{ macros.compact_input(key, name + '.' + key, object.trigger_value or {}, key) }}
+              {{ macros.compact_input(key, key_prefix + key, object.trigger_value or {}, key) }}
             {% endfor %}
           </div>
         {% endfor %}
       {% endcall %}
-
 
       <div class="detail-actions">
         <button
@@ -76,12 +78,16 @@
         >
           Save
         </button>
+
+        {% if not is_create %}
+        <div style="flex-grow: 1"></div>
         <button
           class="btn btn-error btr-delete-task"
           data-task-id="{{object.id}}"
         >
           Delete
         </button>
+        {% endif %}
       </div>
 
     </form>
@@ -96,6 +102,49 @@
     document.querySelectorAll('.trigger-args').forEach((el) => {
       const triggerType = el.dataset.triggerType || ''
       el.style.display = triggerType === value ? 'grid' : 'none'
+    })
+  })
+
+  delegate('.edit-form', 'submit', (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.delegateTarget)
+    // console.log('on form submit', formData, Object.fromEntries(formData))
+    const rawObj = Object.fromEntries(formData)
+    const data = {}
+
+    // construct trigger value
+    const triggerValue = {}
+    for (const [key, value] of formData) {
+      if (key === 'id') {
+        if (value) {
+          console.log('id value', value)
+          data[key] = parseInt(value)
+        }
+      } else if (key === 'script_id') {
+        data[key] = parseInt(value)
+      } else if (key.startsWith('trigger_value.')) {
+        const [_, trigger_type, subkey] = key.split('.')
+        if (trigger_type == rawObj.trigger_type && value) {
+          triggerValue[subkey] = value
+        }
+      } else {
+        data[key] = value
+      }
+    }
+
+    data.trigger_value = triggerValue
+
+    console.log('submitting', data)
+
+    const is_create = '{{ is_create }}'
+    const url = is_create ? TAKO.urls.apiTasksCreate : TAKO.urls.apiTasksUpdate
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
   })
 </script>

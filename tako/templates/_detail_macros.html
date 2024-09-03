@@ -21,7 +21,7 @@
 </tr>
 {%- endmacro %}
 
-{% macro input_group(label, name, object, value_key=None, cols=12, label_cols=3) -%}
+{% macro input_group(label, name, object, value_key=None, required=False, cols=12, label_cols=3) -%}
 <div class="form-group">
   <div class="col-{{ label_cols }} col-sm-{{ cols }}">
     <label class="form-label" for="input-{{ name }}">{{ label }}</label>
@@ -31,7 +31,12 @@
       {{ caller(name) }}
     {% else %}
       {% set value_key = value_key or name %}
-      <input class="form-input" type="text" name="{{ name }}" id="input-{{ name }}" value="{{ object[value_key]|default('') }}">
+      <input
+        class="form-input" type="text"
+        name="{{ name }}" id="input-{{ name }}"
+        value="{{ object[value_key]|default('') }}"
+        {% if required %}required{% endif %}
+      >
     {% endif %}
   </div>
 </div>

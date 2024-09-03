@@ -1,5 +1,7 @@
 from django.forms.models import model_to_dict
+from pydantic import BaseModel, Field, field_validator, model_validator
 
+from ..api.task import trigger_dt_map
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.db import get_x_by_y
@@ -9,7 +11,8 @@ from ..helper.db import get_x_by_y
 # from .myjobs import job_store
 from ..lib.jinja2 import get_spectre_label_class
 from ..models.job import DjangoJobExecution
-from .base import APIView, filter_executions_qs
+from ..models.task import TriggerType
+from .base import APIView, filter_executions_qs, validate_params
 
 
 class TaskExecuteView(APIView):
@@ -77,3 +80,38 @@ class ExecutionsTSDataView(APIView):
                 'data': v,
             })
         return self.json_response(data)
+
+
+
+class TasksEditParams(BaseModel):
+    id: int = None
+    name: str
+    script_id: int
+    script_args: str = ''
+    trigger_type: str = Field()
+    trigger_value: dict
+
+    @field_validator('trigger_type')
+    def validate_trigger_type(cls, value):
+        assert value in TriggerType.values()
+        return value
+
+    @model_validator(mode='after')
+    def validate_trigger_value(self):
+        type_cls = trigger_dt_map[self.trigger_type]
+        type_cls.model_validate(self.trigger_value)
+        return self
+
+
+@validate_params(TasksEditParams, 'POST')
+def tasks_create_view(request):
+    print(request.params)
+    pass
+
+
+def tasks_update_view(request):
+    pass
+
+
+def tasks_delete_view(request):
+    pass

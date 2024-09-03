@@ -96,7 +96,7 @@ TAKO.draw_event_drops = function(el, data, margin) {
 
 
 TAKO.fetchExecutionsTsdata = function() {
-  return fetch(TAKO.urls.executionsTsdata + window.location.search)
+  return fetch(TAKO.urls.apiExecutionsTsdata + window.location.search)
     .then(function(resp) {
       return resp.json();
     })

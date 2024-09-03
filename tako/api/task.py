@@ -8,12 +8,19 @@ from django.db.transaction import atomic
 
 from ..lib.script import script_dir, script_runner
 from ..log import lg
-from ..models import Task
-from ..models.task import Script, ScriptVersion
+from ..models.task import Script, ScriptVersion, Task, TriggerType
 from .scheduler import get_scheduler
+from .types import CronTriggerDT, DateTriggerDT, IntervalTriggerDT
 
 
 default_trigger = DateTrigger(run_date='9999-01-01')
+
+
+trigger_dt_map = {
+    TriggerType.cron: CronTriggerDT,
+    TriggerType.interval: IntervalTriggerDT,
+    TriggerType.date: DateTriggerDT,
+}
 
 
 def create_task_job(task: Task) -> Job:

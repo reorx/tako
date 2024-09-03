@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
-from ..api.types import CronTriggerDT, DateTriggerDT, IntervalTriggerDT
+from ..api.task import trigger_dt_map
 from ..models.job import DjangoJob, DjangoJobExecution
 from ..models.task import Script, Task, TriggerType
 from .base import filter_executions_qs, get_page_range, get_param
@@ -156,11 +156,7 @@ def get_tasks_edit_context(**kwargs):
     context = dict(
         scripts=Script.objects.all().order_by('-updated_at'),
         TriggerType=TriggerType,
-        trigger_dt_map={
-            TriggerType.cron: CronTriggerDT,
-            TriggerType.interval: IntervalTriggerDT,
-            TriggerType.date: DateTriggerDT,
-        }
+        trigger_dt_map=trigger_dt_map,
     )
     context.update(kwargs)
     return context
@@ -172,4 +168,4 @@ def tasks_edit_view(request, id):
 
 
 def tasks_create_view(request):
-    return render(request, 'tasks_edit.html', get_tasks_edit_context(object={}))
+    return render(request, 'tasks_edit.html', get_tasks_edit_context(object={}, is_create=True))

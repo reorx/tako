@@ -1,4 +1,5 @@
 
+import functools
 import json
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -6,6 +7,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from pydantic import ValidationError
 
 
 class ParamsError(Exception):
@@ -23,6 +25,20 @@ def get_param(request, key, type_class=None, default=None):
     if len(v) == 1:
         return v[0]
     return v
+
+
+def json_response(data, status=200, encoder=None, json_dumps_params=None, **kwargs):
+    json_dumps_params = json_dumps_params or {}
+    json_dumps_params.update({'ensure_ascii': False})
+
+    return JsonResponse(
+        data,
+        encoder=encoder or DjangoJSONEncoder,
+        json_dumps_params=json_dumps_params,
+        safe=False,
+        status=status,
+        **kwargs,
+    )
 
 
 class APIView(View):
@@ -58,19 +74,7 @@ class APIView(View):
         if self.is_json:
             self.json = json.loads(self.request.body)
 
-    @staticmethod
-    def json_response(data, status=200, encoder=None, json_dumps_params=None, **kwargs):
-        json_dumps_params = json_dumps_params or {}
-        json_dumps_params.update({'ensure_ascii': False})
-
-        return JsonResponse(
-            data,
-            encoder=encoder or DjangoJSONEncoder,
-            json_dumps_params=json_dumps_params,
-            safe=False,
-            status=status,
-            **kwargs,
-        )
+    json_response = staticmethod(json_response)
 
 
 def get_executions_params(request):
@@ -121,3 +125,45 @@ def get_page_range(origin_range, num_pages, limit, surround, number, ellipsis='.
         return left + surrounded + right
     else:
         return origin_range
+
+
+def queryset_to_dict(qs):
+    # convert django <QueryDict> to dict, when <QueryDict>
+    # is like <QueryDict {'a': ['1'], 'b': ['x', 'y']}>,
+    # iteritems will make 'a' return '1', 'b' return 'y',
+    # we should convert it to a normal dict so that 'b' keeps
+    # ['x', 'y']
+    raw = {}
+    for k, v in qs.items():
+        if not v:
+            continue
+        if len(v) == 1:
+            raw[k] = v[0]
+        else:
+            raw[k] = v
+    return raw
+
+
+def validate_params(type_cls, method='GET'):
+    def deco(func):
+        # disable csrf for api views
+        func = csrf_exempt(func)
+
+        @functools.wraps(func)
+        def wrapper(request, *args, **kwargs):
+            try:
+                if method == 'GET':
+                    params = type_cls.model_validate(**queryset_to_dict(request.GET))
+                else:
+                    params = type_cls.model_validate_json(request.body)
+            except ValidationError as e:
+                return json_response({
+                    'success': False,
+                    'error': f'{e}'
+                }, 400)
+
+            request.params = params
+            return func(request, *args, **kwargs)
+
+        return wrapper
+    return deco

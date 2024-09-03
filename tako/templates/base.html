@@ -30,7 +30,10 @@
     const TAKO = {
       urls: {
         executions: "{{ url('executions') }}",
-        executionsTsdata: "{{ url('api_executions_tsdata') }}",
+        apiExecutionsTsdata: "{{ url('api_executions_tsdata') }}",
+        apiTasksCreate: "{{ url('api_tasks_create') }}",
+        apiTasksUpdate: "{{ url('api_tasks_update') }}",
+        apiTasksDelete: "{{ url('api_tasks_delete') }}",
       },
       setSearchParams: function(params) {
         const paramsStr = params.toString()
