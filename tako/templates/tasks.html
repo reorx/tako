@@ -8,10 +8,8 @@
 
 <section>
   <div class="table-actions">
-    <a href="{{ url('tasks_create') }}">
-      <button class="btn btn-primary">
-        Create Task
-      </button>
+    <a href="{{ url('tasks_create') }}" class="btn btn-primary">
+      Create Task
     </a>
   </div>
   <table class="table">
@@ -63,13 +61,12 @@
         <td>
           <div style="display: flex; gap: 16px;">
             {% if request.user.is_superuser %}
-            <a href="{{ url('tasks_edit', obj.id) }}">
-            <button
+            <a
+              href="{{ url('tasks_edit', obj.id) }}"
               class="btn btn-sm tooltip tooltip-left"
               data-tooltip="Edit task"
             >
               <i class="icon icon-edit"></i>
-            </button>
             </a>
 
             <button
