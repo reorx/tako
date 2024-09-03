@@ -174,3 +174,12 @@ def tasks_edit_view(request, id):
 
 def tasks_create_view(request):
     return render(request, 'tasks_edit.html', get_tasks_edit_context(object={}, is_create=True))
+
+
+def scripts_edit_view(request, id):
+    script = Script.objects.get(id=id)
+    return render(request, 'scripts_edit.html', dict(object=script, is_create=False))
+
+
+def scripts_create_view(request):
+    return render(request, 'scripts_edit.html', dict(object={}, is_create=True))

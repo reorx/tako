@@ -20,9 +20,10 @@ You can also create and edit tasks that take a script to run without restarting 
 ## TODO
 
 Before 1.0:
-- [ ] Run script
-- [ ] Cancel a running script (if possible)
-- [ ] Create task
+- [x] Create and update task
+- [ ] Create and update script
+- [ ] Run job
+- [ ] Cancel a running job (if possible)
 
 
 Additional Features:

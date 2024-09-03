@@ -163,3 +163,16 @@ def tasks_delete_view(request):
     delete_task(task)
 
     return HttpResponse(status=204)
+
+
+
+def scripts_create_view(request):
+    pass
+
+
+def scripts_update_view(request):
+    pass
+
+
+def scripts_delete_view(request):
+    pass

@@ -32,7 +32,8 @@
           <option value="{{ script.id }}" {% if script.id == object.script_id %}selected{% endif %}>{{ script.filename }}</option>
           {% endfor %}
         </select>
-        <button class="btn" style="margin-left: 1em;">Edit Script</button>
+        <button class="btn btn-edit-script" style="margin-left: 8px;" {{ ternary(object.script_id, '', 'disabled') }}>Edit Script</button>
+        <a href="{{ url('scripts_create') }}" class="btn" style="margin-left: 8px;">Create Scripts</a>
       {% endcall %}
 
       {{ macros.input_group('Script Args', 'script_args', object) }}
@@ -106,6 +107,25 @@
       const triggerType = el.dataset.triggerType || ''
       el.style.display = triggerType === value ? 'grid' : 'none'
     })
+  })
+
+  delegate('select[name=script_id]', 'change', (e) => {
+    const value = e.delegateTarget.value
+    const btn = document.querySelector('.btn-edit-script')
+    if (value) {
+      btn.removeAttribute('disabled')
+      btn.dataset.scriptId = value
+    } else {
+      btn.setAttribute('disabled', '')
+    }
+  })
+
+  delegate('.btn-edit-script', 'click', (e) => {
+    const scriptId = e.delegateTarget.dataset.scriptId
+    if (!scriptId) {
+      return
+    }
+    window.location.href = '{{ url("scripts_edit", 1) }}'.replace('1', scriptId)
   })
 
   delegate('.edit-form', 'submit', (e) => {
