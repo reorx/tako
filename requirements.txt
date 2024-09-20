@@ -3,3 +3,4 @@ django-environ
 pydantic
 jinja2
 arrow
+django
