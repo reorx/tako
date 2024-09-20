@@ -22,14 +22,11 @@ class Env(EnvBase):
     DEBUG = (bool, True)
     APP_ENV = (str, 'local')
     SCRIPTS_DIR = (str, 'local_scripts')
-    WORKERS_NUM = (int, 2)
     TAKO_URL_PREFIX = (str, 'tako/')
 
     # Connections
     ## Database
     DB_URL = (str, '')  # not directly used, get db config by Env._env.db('DB_URL')
-    ## Redis
-    REDIS_URL = (str, 'redis://127.0.0.1:6379/1')
 
     # Logging
     LOG_LEVEL_APP = (str, 'INFO')
@@ -37,7 +34,7 @@ class Env(EnvBase):
     LOG_FORMATTER_JSON = (bool, False)
 
     class Meta:
-        env_file = os.environ.get('ENV_FILE', 'backend.env')
+        env_file = os.environ.get('ENV_FILE', 'tako.env')
 
 
 ## Django basic ##
