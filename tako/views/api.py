@@ -1,10 +1,11 @@
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from ninja import Router
+from ninja.pagination import PageNumberPagination, paginate
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from ..api.task import create_or_update_task_from_obj, delete_task, trigger_dt_map
-from ..api.types import ScriptDT, TaskDT
+from ..api.types import ExecutionDT, ScriptDT, TaskDT
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.db import get_x_by_y
@@ -88,6 +89,15 @@ class ExecutionsTSDataView(APIView):
             })
         return self.json_response(data)
 
+
+@router.get('execution/list', response=list[ExecutionDT])
+@paginate(PageNumberPagination, page_size=10)
+def execution_list_view(request, task_id: int = None):
+    qs = DjangoJobExecution.objects.all()
+    if task_id is not None:
+        task = Task.objects.get(id=task_id)
+        qs.filter(job_id=task.job_id)
+    return qs
 
 
 @router.get('task/list', response=list[TaskDT])
