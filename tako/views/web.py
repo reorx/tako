@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import path, reverse
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
@@ -183,3 +183,24 @@ def scripts_edit_view(request, id):
 
 def scripts_create_view(request):
     return render(request, 'scripts_edit.html', dict(object={}, is_create=True))
+
+
+
+tako_web_urls = [
+    path('', index),
+    path('dashboard', DashboardView.as_view(), name='dashboard'),
+    # list
+    path('executions', ExecutionsView.as_view(), name='executions'),
+    path('jobs', JobsView.as_view(), name='jobs'),
+    path('tasks', TasksView.as_view(), name='tasks'),
+    # detail
+    path('executions/<int:slug>', ExecutionsDetailView.as_view(), name='executions_detail'),
+    path('jobs/<str:slug>', JobsDetailView.as_view(), name='jobs_detail'),
+    path('tasks/<int:slug>', TasksDetailView.as_view(), name='tasks_detail'),
+    path('scripts/<int:slug>', ScriptsDetailView.as_view(), name='scripts_detail'),
+    # edit
+    path('tasks/<int:id>/edit', tasks_edit_view, name='tasks_edit'),
+    path('tasks/create', tasks_create_view, name='tasks_create'),
+    path('scripts/create', scripts_create_view, name='scripts_create'),
+    path('scripts/<int:id>/edit', scripts_edit_view, name='scripts_edit'),
+]

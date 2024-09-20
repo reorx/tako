@@ -4,3 +4,5 @@ pydantic
 jinja2
 arrow
 django
+# required if run tako standalone or use tako.views.api
+django-ninja

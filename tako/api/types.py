@@ -1,4 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from typing import Annotated
+
+from ninja import Schema
+from pydantic import BaseModel, BeforeValidator, ConfigDict
 
 
 class BaseTriggerDT(BaseModel):
@@ -71,3 +74,45 @@ class DateTriggerDT(BaseTriggerDT):
     """
     run_date: str = None
     timezone: str = None
+
+
+def datetime2ts(dt):
+    """datetime to 13 digits timestamp"""
+    return int(dt.timestamp() * 1000)
+
+
+def validate_datetime2ts(value):
+    if isinstance(value, int):
+        return value
+    return datetime2ts(value)
+
+DatetimeToTS = Annotated[int, BeforeValidator(validate_datetime2ts)]
+
+
+
+class ScriptDT(Schema):
+    filename: str
+    content: str
+    created_at: DatetimeToTS
+    updated_at: DatetimeToTS
+
+
+class TaskDT(Schema):
+    name: str
+    job_id: str
+    script: ScriptDT
+    script_args: str
+    trigger_type: str
+    trigger_value: dict|None
+    created_at: DatetimeToTS
+    updated_at: DatetimeToTS
+
+
+class ExecutionDT(Schema):
+    """DjangoJobExecution data type"""
+    id: int
+    job_id: str
+    status: str
+    run_time: DatetimeToTS
+    duration: float|None
+    finished: float|None

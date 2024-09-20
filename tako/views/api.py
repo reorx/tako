@@ -1,8 +1,10 @@
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
+from ninja import Router
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from ..api.task import create_or_update_task_from_obj, delete_task, trigger_dt_map
+from ..api.types import ScriptDT, TaskDT
 # TODO import new run task function
 # from .admin import run_task
 from ..helper.db import get_x_by_y
@@ -14,6 +16,9 @@ from ..lib.jinja2 import get_spectre_label_class
 from ..models.job import DjangoJobExecution
 from ..models.task import Script, Task, TriggerType
 from .base import APIView, filter_executions_qs, handle_exception, json_response, validate_params
+
+
+router = Router()
 
 
 class TaskExecuteView(APIView):
@@ -48,6 +53,7 @@ class JobCancelView(APIView):
             return self.json_response({'success': False, 'error': str(e)}, status=500)
 
 
+# executions/tsdata
 class ExecutionsTSDataView(APIView):
     ts_items_limit = 1000
     time_format = '%Y-%m-%dT%H:%M:%S%z'
@@ -82,6 +88,11 @@ class ExecutionsTSDataView(APIView):
             })
         return self.json_response(data)
 
+
+
+@router.get('task/list', response=list[TaskDT])
+def tasks_list_view(request):
+    return Task.objects.all().order_by('-updated_at')
 
 
 class TasksEditParams(BaseModel):
@@ -164,6 +175,10 @@ def tasks_delete_view(request):
 
     return HttpResponse(status=204)
 
+
+@router.get('script/list', response=list[ScriptDT])
+def scripts_list_view(request):
+    pass
 
 
 def scripts_create_view(request):

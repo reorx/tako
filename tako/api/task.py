@@ -103,6 +103,9 @@ def create_or_update_script_from_obj(obj: Script):
 
 
 def write_script(filename, content):
+    if not script_dir.exists():
+        script_dir.mkdir()
+
     script_path = script_dir / filename
 
     with open(script_path, 'w') as f:
